@@ -12,6 +12,9 @@ import javax.swing.JOptionPane;
 import com.google.gson.Gson;
 
 import intefaces.Chat;
+import intefaces.MenuInicio;
+import intefaces.VentanaPrincipal;
+import paqueteEnvios.Paquete;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
 import paqueteEnvios.PaqueteUsuario;
@@ -24,6 +27,7 @@ public class Cliente extends Thread {
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
+	private VentanaPrincipal chat;
 	
 	
 	private int accion; //accion que realiza el usuario
@@ -32,7 +36,6 @@ public class Cliente extends Thread {
 
 	private String ip;
 	private int puerto;
-
 	public Cliente(String newIp, int newPort) {
 
 		this.ip = newIp;
@@ -57,10 +60,12 @@ public class Cliente extends Thread {
 			try {
 				// Creo el paquete que le voy a enviar al servidor
 				paqueteUsuario = new PaqueteUsuario();
+				new MenuInicio(this).setVisible(true);
+				
+				// Espero a que el usuario seleccione alguna accion
+				this.wait();
+				
 				while (!paqueteUsuario.isInicioSesion()) {
-
-					// Espero a que el usuario seleccione alguna accion
-					wait();
 
 					switch (getAccion()) {
 
@@ -94,25 +99,82 @@ public class Cliente extends Thread {
 						paqueteMensaje.setComando(Comando.MP);
 						salida.writeObject(gson.toJson(paqueteMensaje));
 						break;
-
-
+						
+					case Comando.REGISTRO:
+						paqueteUsuario.setComando(Comando.REGISTRO);
+						salida.writeObject(gson.toJson(paqueteUsuario));
+						break;
+						
 					default:
 						break;
 					}
 
 					salida.flush();
+					
+					if (getAccion() != Comando.CHATALL && getAccion() != Comando.TALK && getAccion()!=Comando.MP) {
+						// Recibo el paquete desde el servidor
+						String cadenaLeida = (String) entrada.readObject();
+						Paquete paquete = gson.fromJson(cadenaLeida, Paquete.class);
+						switch (paquete.getComando()) {
+
+						case Comando.REGISTRO:
+							if (paquete.getMensaje().equals(Paquete.msjExito)) {
+
+								JOptionPane.showMessageDialog(null, "Registro exitoso.");
+
+								paqueteUsuario.setMensaje(Paquete.msjExito);
+								chat = new VentanaPrincipal(this);
+								chat.run();
+							} else {
+								if (paquete.getMensaje().equals(Paquete.msjFracaso))
+									JOptionPane.showMessageDialog(null, "No se pudo registrar.");
+									new MenuInicio(this).setVisible(true);
+								// El usuario no pudo iniciar sesi�n
+								paqueteUsuario.setInicioSesion(false);
+							}
+							break;
+
+						case Comando.INICIOSESION:
+							if (paquete.getMensaje().equals(Paquete.msjExito)) {
+								paqueteUsuario.setMensaje(Paquete.msjExito);
+								// El usuario ya inicio sesi�n
+								chat = new VentanaPrincipal(this);
+								chat.run();
+							} else {
+								if (paquete.getMensaje().equals(Paquete.msjFracaso))
+									JOptionPane.showMessageDialog(null,
+											"Error al iniciar sesi�n. Revise el usuario y la contrase�a");
+
+								new MenuInicio(this).setVisible(true);
+								paqueteUsuario.setInicioSesion(false);
+							}
+							break;
+
+						case Comando.DESCONECTAR:
+							// El usuario no pudo iniciar sesi�n
+							paqueteUsuario.setInicioSesion(false);
+							salida.writeObject(gson.toJson(new Paquete(Comando.DESCONECTAR), Paquete.class));
+							cliente.close();
+							break;
+
+						default:
+							break;
+						}
+					}
+					this.wait();
+					
 				}
 
 				paqueteUsuario.setIp(miIp);
-				salida.writeObject(gson.toJson(paqueteUsuario));
-				notify();
-
-			} catch (IOException | InterruptedException e) {
+				
+			} catch (IOException | InterruptedException | ClassNotFoundException  e) {
 				JOptionPane.showMessageDialog(null, "Fallo la conexión del Cliente.");
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
+		
+		
 	}
 
 	public void setAccion(int accion) {

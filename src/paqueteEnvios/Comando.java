@@ -8,5 +8,6 @@ public class Comando {
 	public static final int CHATALL = 3;
 	public static final int DESCONECTAR = 4;
 	public static final int MP = 5;
+	public static final int REGISTRO = 6;
 
 }

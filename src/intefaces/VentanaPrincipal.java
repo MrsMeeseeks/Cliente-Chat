@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
+import cliente.EscuchaMensajes;
 import cliente.EscuchaServer;
 import paqueteEnvios.Comando;
 import paqueteEnvios.Paquete;
@@ -34,7 +35,7 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.JTextArea;
 
-public class VentanaPrincipal extends JFrame {
+public class VentanaPrincipal extends JFrame implements Runnable {
 	private String user = null;
 	private Cliente cliente, client;
 	private PaqueteUsuario paqueteUsuario;
@@ -45,35 +46,37 @@ public class VentanaPrincipal extends JFrame {
 	private static JList<String> list = new JList<String>();
 	private JTextField nombreUsuario;
 	private static JButton botonChatGeneral;
-	private JButton botonCon;
 	private static JTextArea chat;
 	private static JButton enviarATodos;
 
 	private String ipScanned = "localhost";
 	private int puertoScanned = 1234;
 	private JTextField texto;
-
+	
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaPrincipal frame = new VentanaPrincipal();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void (String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					VentanaPrincipal frame = new VentanaPrincipal();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
 	 */
-	public VentanaPrincipal() {
-
+	public VentanaPrincipal(Cliente cli) {
+		
+		
+		cliente = cli;
+		user = cliente.getPaqueteUsuario().getUsername();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 668, 335);
@@ -124,69 +127,6 @@ public class VentanaPrincipal extends JFrame {
 		nombreUsuario.setBounds(18, 59, 171, 22);
 		contentPane.add(nombreUsuario);
 		nombreUsuario.setColumns(10);
-
-		botonCon = new JButton("Ingresar");
-		botonCon.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (user == null) {
-					int result = JOptionPane.showConfirmDialog(null, myPanel, "Complete estos campos... ",
-							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION) {
-						ipScanned = ip.getText();
-						puertoScanned = Integer.valueOf(puerto.getText());
-						InterfaceLogeo interfaceLogeo = new InterfaceLogeo();
-						interfaceLogeo.setTitle("¡Loguearse!");
-						interfaceLogeo.setVisible(true);
-						interfaceLogeo.addWindowListener(new WindowAdapter() {
-							@Override
-							public void windowClosed(WindowEvent e) {
-								user = interfaceLogeo.getNombreUsuario();
-								if (user != null) {
-									cliente = new Cliente(ipScanned, puertoScanned);
-									cliente.start();
-
-									while (cliente.getState() != Thread.State.WAITING) {
-									}
-									logIn(cliente);
-									EscuchaServer em = new EscuchaServer(cliente);
-									em.start();
-
-									synchronized (this) {
-										try {
-											this.wait(200);
-										} catch (InterruptedException e1) {
-											e1.printStackTrace();
-										}
-									}
-
-									if (cliente.getPaqueteUsuario().getMensaje().equals(Paquete.msjExito)) {
-										setTitle("Usuario: " + user);
-										nombreUsuario.setText(user);
-										refreshListCon(cliente);
-										botonCon.setEnabled(false);
-										enviarATodos.setEnabled(true);
-										texto.setEditable(true);
-										chat.setEnabled(true);
-									} else {
-										try {
-											cliente.getSalida().close();
-											cliente.getEntrada().close();
-											cliente.getSocket().close();
-											cliente.stop();
-											user = null;
-										} catch (IOException e1) {
-											e1.printStackTrace();
-										}
-									}
-								}
-							}
-						});
-					}
-				}
-			}
-		});
-		botonCon.setBounds(20, 9, 169, 23);
-		contentPane.add(botonCon);
 
 		JLabel lblUsuariosConectados = new JLabel("Usuarios Conectados:");
 		lblUsuariosConectados.setBounds(20, 103, 138, 16);
@@ -246,17 +186,14 @@ public class VentanaPrincipal extends JFrame {
 
 					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
 					cliente.setAccion(Comando.CHATALL);
-
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
 					cliente.getPaqueteMensaje().setMensaje(texto.getText());
-
+					texto.setText("");
+					texto.requestFocus();
 					synchronized (cliente) {
 						cliente.notify();
 					}
-					texto.setText("");
-
-					texto.requestFocus();
 				}
 				else
 				{
@@ -324,20 +261,16 @@ public class VentanaPrincipal extends JFrame {
 
 					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
 					cliente.setAccion(Comando.CHATALL);
-
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
 					cliente.getPaqueteMensaje().setMensaje(texto.getText());
-
 					synchronized (cliente) {
 						cliente.notify();
 					}
 					texto.setText("");
 
 					texto.requestFocus();
-				}
-				else
-				{
+				} else {
 					String[] words;
 					words = texto.getText().substring(1).split(" ", 2);
 					if (words.length > 1 && words[1] != null) {
@@ -382,13 +315,7 @@ public class VentanaPrincipal extends JFrame {
 		return false;
 	}
 
-	private void logIn(final Cliente cliente) {
-		cliente.setAccion(Comando.INICIOSESION);
-		cliente.getPaqueteUsuario().setUsername(user);
-		synchronized (cliente) {
-			cliente.notify();
-		}
-	}
+
 
 	private void refreshListCon(final Cliente cliente) {
 		if (cliente != null) {
@@ -435,4 +362,40 @@ public class VentanaPrincipal extends JFrame {
 		return enviarATodos;
 	}
 
+	@Override
+	public void run() {
+		setVisible(true);
+		while (cliente.getState() == Thread.State.WAITING) {
+		}
+		
+		EscuchaServer em = new EscuchaServer(cliente);
+		em.start();
+
+		synchronized (this) {
+			try {
+				this.wait(200);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		if (cliente.getPaqueteUsuario().getMensaje().equals(Paquete.msjExito)) {
+			setTitle("Usuario: " + user);
+			nombreUsuario.setText(user);
+			refreshListCon(cliente);
+			enviarATodos.setEnabled(true);
+			texto.setEditable(true);
+			chat.setEnabled(true);
+		} else {
+			try {
+				cliente.getSalida().close();
+				cliente.getEntrada().close();
+				cliente.getSocket().close();
+				cliente.stop();
+				user = null;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 }
