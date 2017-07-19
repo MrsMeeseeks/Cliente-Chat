@@ -42,14 +42,16 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 	private JPanel contentPane;
 	private DefaultListModel<String> modelo = new DefaultListModel<String>();
-	private static JList<String> list = new JList<String>();
-	private JTextField nombreUsuario;
+	private static JList<String> listaUsuariosChatGeneral = new JList<String>();
 	private static JTextArea chat;
 	private static JButton enviarATodos;
-
+	private JLabel labelNombreUsuario;
+	
 	private String ipScanned = "localhost";
 	private int puertoScanned = 1234;
 	private JTextField texto;
+	private JScrollPane panelListaSalas;
+	private JList<String> listaSalas;
 
 	public VentanaPrincipal(Cliente cli) {
 
@@ -58,7 +60,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		user = cliente.getPaqueteUsuario().getUsername();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 668, 335);
+		setBounds(100, 100, 673, 537);
 		setLocationRelativeTo(null);
 
 		JTextField ip = new JTextField(5);
@@ -97,51 +99,41 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		nombreUsuario = new JTextField();
-		nombreUsuario.setForeground(Color.WHITE);
-		nombreUsuario.setBackground(Color.DARK_GRAY);
-		nombreUsuario.setHorizontalAlignment(SwingConstants.LEFT);
-		nombreUsuario.setEditable(false);
-		nombreUsuario.setBounds(18, 59, 171, 22);
-		contentPane.add(nombreUsuario);
-		nombreUsuario.setColumns(10);
-
 		JLabel labelUsuario = new JLabel("Mi Usuario");
 		labelUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		labelUsuario.setForeground(Color.BLACK);
-		labelUsuario.setBounds(20, 44, 66, 16);
+		labelUsuario.setBounds(22, 11, 66, 16);
 		contentPane.add(labelUsuario);
-		list.setBounds(18, 119, 169, 149);
-		contentPane.add(list);
-		list.setForeground(Color.WHITE);
-		list.setBackground(Color.DARK_GRAY);
 
-		list.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2) {
-					if (list.getSelectedValue() != null) {
-						if (!cliente.getChatsActivos().containsKey(list.getSelectedValue())) {
-							if (cliente != null) {
-								Chat chat = new Chat(cliente);
-								cliente.getChatsActivos().put(list.getSelectedValue(), chat);
-								chat.setTitle(list.getSelectedValue());
-								chat.setVisible(true);
+		JScrollPane panelListaUsuarios = new JScrollPane();
+		panelListaUsuarios.setBounds(18, 56, 171, 228);
+		contentPane.add(panelListaUsuarios);
+		panelListaUsuarios.setViewportView(listaUsuariosChatGeneral);
+		listaUsuariosChatGeneral.setForeground(Color.WHITE);
+		listaUsuariosChatGeneral.setBackground(Color.DARK_GRAY);
+		
+				listaUsuariosChatGeneral.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent arg0) {
+						if (arg0.getClickCount() == 2) {
+							if (listaUsuariosChatGeneral.getSelectedValue() != null) {
+								if (!cliente.getChatsActivos().containsKey(listaUsuariosChatGeneral.getSelectedValue())) {
+									if (cliente != null) {
+										Chat chat = new Chat(cliente);
+										cliente.getChatsActivos().put(listaUsuariosChatGeneral.getSelectedValue(), chat);
+										chat.setTitle(listaUsuariosChatGeneral.getSelectedValue());
+										chat.setVisible(true);
+									}
+								}
 							}
 						}
 					}
-				}
-			}
-		});
-
-		list.setModel(modelo);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(18, 119, 169, 149);
-		contentPane.add(scrollPane);
+				});
+				
+						listaUsuariosChatGeneral.setModel(modelo);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(209, 11, 443, 241);
+		scrollPane_1.setBounds(209, 11, 443, 436);
 		contentPane.add(scrollPane_1);
 
 		chat = new JTextArea();
@@ -156,7 +148,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
 
-					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+					chat.append(user + ": " + texto.getText() + "\n");
 
 					cliente.setAccion(Comando.CHATALL);
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
@@ -175,7 +167,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						chat.append(cliente.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
+						chat.append(user + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
 						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername() );
 						cliente.getPaqueteMensaje().setUserReceptor(words[0]);
@@ -183,7 +175,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 						if(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserReceptor())){
 							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getChat()
-							.append(cliente.getPaqueteUsuario().getUsername() + ": "
+							.append(user + ": "
 									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
 						}
@@ -195,7 +187,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 							chatPropio.setVisible(true);
 
 							cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserReceptor(), chatPropio);
-							chatPropio.getChat().append(cliente.getPaqueteUsuario().getUsername() + ": "
+							chatPropio.getChat().append(user + ": "
 									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 						}
 						synchronized (cliente) {
@@ -219,7 +211,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		texto.setEditable(false);
 		texto.setForeground(Color.WHITE);
 		texto.setBackground(Color.BLACK);
-		texto.setBounds(209, 256, 302, 39);
+		texto.setBounds(209, 458, 302, 39);
 		contentPane.add(texto);
 		texto.setColumns(10);
 
@@ -228,7 +220,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		enviarATodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
-					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+					chat.append(user + ": " + texto.getText() + "\n");
 
 					cliente.setAccion(Comando.CHATALL);
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
@@ -248,7 +240,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						chat.append(cliente.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
+						chat.append(user + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
 						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 						cliente.getPaqueteMensaje().setUserReceptor(words[0]);
@@ -273,8 +265,35 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			}
 
 		});
-		enviarATodos.setBounds(521, 256, 131, 39);
+		enviarATodos.setBounds(521, 458, 131, 39);
 		contentPane.add(enviarATodos);
+		
+		panelListaSalas = new JScrollPane();
+		panelListaSalas.setBounds(18, 329, 171, 168);
+		contentPane.add(panelListaSalas);
+		
+		listaSalas = new JList<String>();
+		listaSalas.setForeground(Color.WHITE);
+		listaSalas.setBackground(Color.DARK_GRAY);
+		panelListaSalas.setViewportView(listaSalas);
+		
+		labelNombreUsuario = new JLabel("");
+		labelNombreUsuario.setForeground(Color.BLACK);
+		labelNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		labelNombreUsuario.setBounds(78, 11, 111, 16);
+		contentPane.add(labelNombreUsuario);
+		
+		JLabel labelUsuariosConectados = new JLabel("Usuarios Online");
+		labelUsuariosConectados.setForeground(Color.BLACK);
+		labelUsuariosConectados.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		labelUsuariosConectados.setBounds(22, 38, 111, 16);
+		contentPane.add(labelUsuariosConectados);
+		
+		JLabel labelSalas = new JLabel("Salas Disponibles");
+		labelSalas.setForeground(Color.BLACK);
+		labelSalas.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		labelSalas.setBounds(22, 306, 111, 16);
+		contentPane.add(labelSalas);
 	}
 
 	private boolean abrirVentanaConfirmaSalir() {
@@ -299,7 +318,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						modelo.addElement(cad);
 					}
 					cantUsuariosCon = (modelo.getSize());
-					list.setModel(modelo);
+					listaUsuariosChatGeneral.setModel(modelo);
 				}
 			}
 			if(cantUsuariosCon == 0)
@@ -318,7 +337,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	}
 
 	public static JList<String> getList() {
-		return list;
+		return listaUsuariosChatGeneral;
 	}
 
 	public static void setCantUsuariosCon(int i) {
@@ -352,7 +371,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 		if (cliente.getPaqueteUsuario().getMensaje().equals(Paquete.msjExito)) {
 			setTitle("Usuario: " + user);
-			nombreUsuario.setText(user);
+			labelNombreUsuario.setText(user);
 			refreshListCon(cliente);
 			enviarATodos.setEnabled(true);
 			texto.setEditable(true);
