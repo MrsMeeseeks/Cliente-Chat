@@ -58,6 +58,7 @@ public class Chat extends JFrame {
 
 		texto = new JTextField();
 		texto.setForeground(Color.WHITE);
+		texto.setCaretColor(Color.WHITE);
 		texto.setBackground(new Color(64, 64, 64));
 		this.addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {

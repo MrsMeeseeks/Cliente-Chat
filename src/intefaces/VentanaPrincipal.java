@@ -140,7 +140,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		chat.setEnabled(false);
 		chat.setEditable(false);
 		chat.setForeground(Color.WHITE);
-		chat.setBackground(Color.BLACK);
+		chat.setBackground(Color.DARK_GRAY);
 		scrollPane_1.setViewportView(chat);
 
 		texto = new JTextField();
@@ -210,7 +210,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 		texto.setEditable(false);
 		texto.setForeground(Color.WHITE);
-		texto.setBackground(Color.BLACK);
+		texto.setBackground(Color.DARK_GRAY);
+		texto.setCaretColor(Color.WHITE);
 		texto.setBounds(209, 458, 302, 39);
 		contentPane.add(texto);
 		texto.setColumns(10);

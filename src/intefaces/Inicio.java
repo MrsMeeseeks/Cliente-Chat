@@ -47,8 +47,8 @@ public class Inicio extends JFrame{
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
-		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBackground(Color.GRAY);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
@@ -90,5 +90,7 @@ public class Inicio extends JFrame{
 		});
 		btnAceptar.setBounds(107, 109, 89, 23);
 		contentPane.add(btnAceptar);
+		this.getRootPane().setDefaultButton(btnAceptar);
+		btnAceptar.requestFocus();
 	}
 }

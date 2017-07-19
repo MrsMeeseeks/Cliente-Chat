@@ -50,6 +50,7 @@ public class MenuInicioSesion extends JFrame {
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBackground(Color.GRAY);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
@@ -75,6 +76,19 @@ public class MenuInicioSesion extends JFrame {
 		textField.setColumns(10);
 
 		passwordField = new JPasswordField();
+		passwordField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!textField.getText().equals("") && !passwordField.getText().equals("")){
+					synchronized(cliente){
+						cliente.setAccion(Comando.INICIOSESION);
+						cliente.getPaqueteUsuario().setUsername(textField.getText());
+						cliente.getPaqueteUsuario().setPassword(passwordField.getText());
+						cliente.notify();
+						dispose();
+					}
+				}
+			}
+		});
 		passwordField.setBounds(198, 119, 118, 20);
 		layeredPane.add(passwordField, new Integer(1));
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 11));

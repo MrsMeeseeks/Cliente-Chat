@@ -48,6 +48,7 @@ public class MenuInicio extends JFrame {
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBackground(Color.GRAY);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
@@ -68,9 +69,10 @@ public class MenuInicio extends JFrame {
 		});
 		
 		JButton btnIniciarSesion = new JButton("Iniciar Sesion");
+		
 		btnIniciarSesion.setBounds(121, 92, 191, 23);
 		layeredPane.add(btnIniciarSesion, new Integer(1));
-		btnIniciarSesion.setFocusable(false);
+		btnIniciarSesion.setFocusable(true);
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -79,6 +81,9 @@ public class MenuInicio extends JFrame {
 				dispose();
 			}
 		});
+		
+		this.getRootPane().setDefaultButton(btnIniciarSesion);
+		btnIniciarSesion.requestFocus();
 	}
 }
 
