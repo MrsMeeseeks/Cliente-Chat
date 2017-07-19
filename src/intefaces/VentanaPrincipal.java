@@ -106,10 +106,6 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		contentPane.add(nombreUsuario);
 		nombreUsuario.setColumns(10);
 
-		JLabel lblUsuariosConectados = new JLabel("Usuarios Conectados:");
-		lblUsuariosConectados.setBounds(20, 103, 138, 16);
-		contentPane.add(lblUsuariosConectados);
-
 		JLabel labelUsuario = new JLabel("Mi Usuario");
 		labelUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		labelUsuario.setForeground(Color.BLACK);
@@ -160,7 +156,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
 
-					chat.append("Yo:" + texto.getText() + "\n");
+					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
 					cliente.setAccion(Comando.CHATALL);
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
@@ -179,7 +175,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						chat.append("Yo (Para "+ words[0] +") :" + words[1] + "\n");
+						chat.append(cliente.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
 						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername() );
 						cliente.getPaqueteMensaje().setUserReceptor(words[0]);
@@ -187,7 +183,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 						if(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserReceptor())){
 							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getChat()
-							.append("Yo " + ": "
+							.append(cliente.getPaqueteUsuario().getUsername() + ": "
 									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
 						}
@@ -199,7 +195,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 							chatPropio.setVisible(true);
 
 							cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserReceptor(), chatPropio);
-							chatPropio.getChat().append("Yo" + ": "
+							chatPropio.getChat().append(cliente.getPaqueteUsuario().getUsername() + ": "
 									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 						}
 						synchronized (cliente) {
@@ -231,11 +227,9 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		enviarATodos.setEnabled(false);
 		enviarATodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//manda el msj a todos
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
-					chat.append("Yo :" + texto.getText() + "\n");
+					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
-					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
 					cliente.setAccion(Comando.CHATALL);
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
@@ -254,7 +248,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						chat.append("Yo (Para "+ words[0] +") :" + words[1] + "\n");
+						chat.append(cliente.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
 						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 						cliente.getPaqueteMensaje().setUserReceptor(words[0]);

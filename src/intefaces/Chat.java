@@ -69,7 +69,7 @@ public class Chat extends JFrame {
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("")) {
-					chat.append("Yo: " + texto.getText() + "\n");
+					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 					
 					cliente.setAccion(Comando.TALK);
 
@@ -92,14 +92,19 @@ public class Chat extends JFrame {
 		enviar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("")) {
-					chat.append("Me: " + texto.getText() + "\n");
+					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
-
+					/*
+					 * Para la aplicacion de las salas
+					 * 
 					if (getTitle() != "Sala") {
 						cliente.setAccion(Comando.TALK);
 					} else {
 						cliente.setAccion(Comando.CHATALL);
 					}
+					*/
+					
+					cliente.setAccion(Comando.TALK);
 
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
