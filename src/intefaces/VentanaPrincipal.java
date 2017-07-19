@@ -25,7 +25,6 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
-import cliente.EscuchaMensajes;
 import cliente.EscuchaServer;
 import paqueteEnvios.Comando;
 import paqueteEnvios.Paquete;
@@ -37,7 +36,7 @@ import javax.swing.JTextArea;
 
 public class VentanaPrincipal extends JFrame implements Runnable {
 	private String user = null;
-	private Cliente cliente, client;
+	private Cliente cliente;
 	private PaqueteUsuario paqueteUsuario;
 	private static int cantUsuariosCon;
 
@@ -45,36 +44,16 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	private DefaultListModel<String> modelo = new DefaultListModel<String>();
 	private static JList<String> list = new JList<String>();
 	private JTextField nombreUsuario;
-	private static JButton botonChatGeneral;
 	private static JTextArea chat;
 	private static JButton enviarATodos;
 
 	private String ipScanned = "localhost";
 	private int puertoScanned = 1234;
 	private JTextField texto;
-	
-	/**
-	 * Launch the application.
-	 */
-//	public static void (String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					VentanaPrincipal frame = new VentanaPrincipal();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VentanaPrincipal(Cliente cli) {
-		
-		
+
+
 		cliente = cli;
 		user = cliente.getPaqueteUsuario().getUsername();
 		setResizable(false);
@@ -102,7 +81,6 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 				if (abrirVentanaConfirmaSalir()) {
 					if (cliente != null) {
 						synchronized (cliente) {
-							// NOTIFICA QUE SE DESCONECTO EL USUARIO
 							cliente.setAccion(Comando.DESCONECTAR);
 							cliente.notify();
 						}
@@ -180,11 +158,10 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		texto = new JTextField();
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//manda el msj a todos
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
-					chat.append("Yo :" + texto.getText() + "\n");
 
-					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
+					chat.append("Yo:" + texto.getText() + "\n");
+
 					cliente.setAccion(Comando.CHATALL);
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
@@ -195,8 +172,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 						cliente.notify();
 					}
 				}
-				else
-				{
+				else if(!texto.getText().equals("")){
 					String[] words;
 					words = texto.getText().substring(1).split(" ", 2);
 					if (words.length > 1 && words[1] != null) {
@@ -223,7 +199,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 							chatPropio.setVisible(true);
 
 							cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserReceptor(), chatPropio);
-							chatPropio.getChat().append("Yo " + ": "
+							chatPropio.getChat().append("Yo" + ": "
 									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 						}
 						synchronized (cliente) {
@@ -270,7 +246,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 					texto.setText("");
 
 					texto.requestFocus();
-				} else {
+				}
+				else if(!texto.getText().equals("")){
 					String[] words;
 					words = texto.getText().substring(1).split(" ", 2);
 					if (words.length > 1 && words[1] != null) {
@@ -367,7 +344,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		setVisible(true);
 		while (cliente.getState() == Thread.State.WAITING) {
 		}
-		
+
 		EscuchaServer em = new EscuchaServer(cliente);
 		em.start();
 
