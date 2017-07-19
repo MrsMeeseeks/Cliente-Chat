@@ -29,8 +29,7 @@ public class Chat extends JFrame {
 	private JTextArea chat;
 	private Cliente client;
 
-	public static void main(String[] args) {
-	}
+	
 
 	public Chat(final Cliente cliente) {
 		this.client = cliente;
