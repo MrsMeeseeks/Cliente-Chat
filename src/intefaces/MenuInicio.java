@@ -38,6 +38,7 @@ public class MenuInicio extends JFrame {
 					cliente.notify();
 				}
 				dispose();
+				System.exit(0);
 			}
 		});
 		

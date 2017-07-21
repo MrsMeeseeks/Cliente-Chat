@@ -9,5 +9,7 @@ public class Comando {
 	public static final int DESCONECTAR = 4;
 	public static final int MP = 5;
 	public static final int REGISTRO = 6;
+	public static final int NEWSALA = 7;
+	public static final int ENTRARSALA = 8;
 
 }

@@ -3,12 +3,15 @@ package paqueteEnvios;
 import java.io.Serializable;
 import java.util.List;
 
+import intefaces.Sala;
+
 public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	private String username;
 	private boolean inicioSesion;
 	private boolean estado;
 	private List<String> listaDeConectados;
+	private List<String> listaDeSalas;
 	private String password;
 
 	public PaqueteUsuario() {
@@ -65,6 +68,14 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public List<String> getListaDeSalas() {
+		return listaDeSalas;
+	}
+
+	public void setListaDeSalas(List<String> listaDeSalas) {
+		this.listaDeSalas = listaDeSalas;
 	}
 	
 }

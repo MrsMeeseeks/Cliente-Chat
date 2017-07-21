@@ -1,48 +1,38 @@
 package intefaces;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import paqueteEnvios.Paquete;
+import paqueteEnvios.PaqueteSala;
+
 import javax.swing.JTextPane;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
-import javax.swing.BoxLayout;
+
 import javax.swing.JLabel;
 
-public class Sala extends JFrame {
+public class Sala extends JFrame  {
 
 	private JPanel contentPane;
 	private JTextField texto;
+	private JLabel lblNombreUsuario;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Sala frame = new Sala();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private String name;
 
-	/**
-	 * Create the frame.
-	 */
-	public Sala() {
+
+	private static JList<String> listaConectadosSala = new JList<String>();
+	
+	
+	public Sala(PaqueteSala paqueteSala) {
+		this.name = paqueteSala.getName();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 646, 300);
 		contentPane = new JPanel();
@@ -79,6 +69,7 @@ public class Sala extends JFrame {
 		JTextPane chat = new JTextPane();
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
+		chat.setText(paqueteSala.getHistorial());
 		scrollPane_1.setViewportView(chat);
 		
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
@@ -86,11 +77,48 @@ public class Sala extends JFrame {
 		contentPane.add(btnDesconectarse);
 		
 		JLabel lblUsuario = new JLabel("Usuario ");
-		lblUsuario.setBounds(10, 11, 46, 14);
+		lblUsuario.setBounds(10, 11, 54, 14);
 		contentPane.add(lblUsuario);
 		
-		JLabel lblNombreUsuario = new JLabel("");
+		lblNombreUsuario = new JLabel("");
 		lblNombreUsuario.setBounds(57, 11, 123, 14);
 		contentPane.add(lblNombreUsuario);
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.Component#getName()
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.Component#setName(java.lang.String)
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setNombreUsuario(String nombre){
+		this.lblNombreUsuario.setText(nombre);
+	}
+	
+	public static JList<String> getListaConectadosSala() {
+		return listaConectadosSala;
+	}
+	public static void setListaConectadosSala(JList<String> listaConectadosSala) {
+		Sala.listaConectadosSala = listaConectadosSala;
+	}
+//	@Override
+//	public void run() {
+//		setTitle(name);
+//		labelNombreUsuario.setText(user);
+//		refreshListCon(cliente);
+//		refreshListSalas(cliente);
+//		enviarATodos.setEnabled(true);
+//		texto.setEditable(true);
+//		chat.setEnabled(true);
+//	}
+	
 }

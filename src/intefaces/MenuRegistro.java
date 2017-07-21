@@ -45,6 +45,7 @@ public class MenuRegistro extends JFrame {
 					cliente.notify();
 				}
 				dispose();
+				System.exit(0);
 			}
 		});
 		

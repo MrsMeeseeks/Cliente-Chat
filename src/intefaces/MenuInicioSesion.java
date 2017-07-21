@@ -40,7 +40,7 @@ public class MenuInicioSesion extends JFrame {
 					cliente.notify();
 				}
 				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+				System.exit(0);
 			}
 		});
 

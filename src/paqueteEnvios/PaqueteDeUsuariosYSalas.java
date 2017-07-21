@@ -4,26 +4,35 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class PaqueteDeUsuarios extends Paquete implements Serializable, Cloneable {
+public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cloneable {
 
 	private ArrayList<String> usuarios;
+	private ArrayList<String> salas;
 	private Map<String, PaqueteUsuario> usuariosConectados;
 
-	public PaqueteDeUsuarios() {
+	public PaqueteDeUsuariosYSalas() {
 	}
 
 	public Map<String, PaqueteUsuario> getUsuariosConectados() {
 		return usuariosConectados;
 	}
 
-	public PaqueteDeUsuarios(ArrayList<String> usuarios) {
+	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios, ArrayList<String> salas) {
+		this.usuarios = usuarios;
+		this.salas = salas;
+	}
+
+	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios) {
 		this.usuarios = usuarios;
 	}
 
-	public ArrayList<String> getPersonajes() {
+	public ArrayList<String> getUsuarios() {
 		return usuarios;
 	}
 
+	public ArrayList<String> getSalas() {
+		return salas;
+	}
 	@Override
 	public Object clone() {
 		Object obj = null;

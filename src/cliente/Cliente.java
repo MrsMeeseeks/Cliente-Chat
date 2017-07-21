@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +14,13 @@ import com.google.gson.Gson;
 
 import intefaces.Chat;
 import intefaces.MenuInicio;
+import intefaces.Sala;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.Paquete;
+import paqueteEnvios.PaqueteDeUsuariosYSalas;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
+import paqueteEnvios.PaqueteSala;
 import paqueteEnvios.PaqueteUsuario;
 
 public class Cliente extends Thread {
@@ -27,8 +31,13 @@ public class Cliente extends Thread {
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
+	private Map<String, Sala> salasActivas = new HashMap<>();
 	private VentanaPrincipal chat;
 	
+	/*
+	 * 
+	 */
+	private PaqueteSala paqueteSala = new PaqueteSala();
 	
 	private int accion; //accion que realiza el usuario
 
@@ -75,6 +84,11 @@ public class Cliente extends Thread {
 						salida.writeObject(gson.toJson(paqueteUsuario));
 						break;
 
+					case Comando.NEWSALA:
+						paqueteSala.setComando(Comando.NEWSALA);
+						salida.writeObject(gson.toJson(paqueteSala));
+						break;
+						
 					case Comando.TALK:
 						paqueteMensaje.setComando(Comando.TALK);
 						// Le envio el paquete al servidor
@@ -105,24 +119,28 @@ public class Cliente extends Thread {
 						salida.writeObject(gson.toJson(paqueteUsuario));
 						break;
 						
+					case Comando.ENTRARSALA:
+						paqueteSala.setComando(Comando.ENTRARSALA);
+						salida.writeObject(gson.toJson(paqueteSala));
+						break;
 					default:
 						break;
 					}
 
 					salida.flush();
 					
-					if (getAccion() != Comando.CHATALL && getAccion() != Comando.TALK && getAccion()!=Comando.MP) {
+					
+					if (getAccion() == Comando.DESCONECTAR || getAccion() == Comando.INICIOSESION || getAccion() ==Comando.REGISTRO) {
 						// Recibo el paquete desde el servidor
 						String cadenaLeida = (String) entrada.readObject();
 						Paquete paquete = gson.fromJson(cadenaLeida, Paquete.class);
 						switch (paquete.getComando()) {
 
 						case Comando.REGISTRO:
+							paqueteUsuario.setMensaje(paquete.getMensaje());
 							if (paquete.getMensaje().equals(Paquete.msjExito)) {
 
 								JOptionPane.showMessageDialog(null, "Registro exitoso.");
-
-								paqueteUsuario.setMensaje(Paquete.msjExito);
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
@@ -135,15 +153,18 @@ public class Cliente extends Thread {
 							break;
 
 						case Comando.INICIOSESION:
+							paqueteUsuario.setMensaje(paquete.getMensaje());
+							ArrayList<String> salas = (ArrayList<String>) gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class)
+									.getSalas();
+							paqueteUsuario.setListaDeSalas(salas);
 							if (paquete.getMensaje().equals(Paquete.msjExito)) {
-								paqueteUsuario.setMensaje(Paquete.msjExito);
-								// El usuario ya inicio sesi�n
+						
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
 								if (paquete.getMensaje().equals(Paquete.msjFracaso))
 									JOptionPane.showMessageDialog(null,
-											"Error al iniciar sesi�n. Revise el usuario y la contrase�a");
+											"Error al iniciar sesión. Revise el usuario y la contraseña");
 
 								new MenuInicio(this).setVisible(true);
 								paqueteUsuario.setInicioSesion(false);
@@ -171,7 +192,7 @@ public class Cliente extends Thread {
 				JOptionPane.showMessageDialog(null, "Fallo la conexión del Cliente.");
 				e.printStackTrace();
 				System.exit(1);
-			}
+			} 
 		}
 		
 		
@@ -234,8 +255,21 @@ public class Cliente extends Thread {
 	public Map<String, Chat> getChatsActivos() {
 		return chatsActivos;
 	}
+	
+	public Map<String, Sala> getSalasActivas() {
+		return salasActivas;
+	}
 
 	public void setChatsActivos(Map<String, Chat> chatsActivos) {
 		this.chatsActivos = chatsActivos;
 	}
+
+	public PaqueteSala getPaqueteSala() {
+		return paqueteSala;
+	}
+
+	public void setPaqueteSala(PaqueteSala paqueteSala) {
+		this.paqueteSala = paqueteSala;
+	}
+
 }
