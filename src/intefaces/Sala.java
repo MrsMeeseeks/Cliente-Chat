@@ -2,12 +2,15 @@ package intefaces;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import cliente.Cliente;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteSala;
 
@@ -22,17 +25,21 @@ import javax.swing.JLabel;
 public class Sala extends JFrame  {
 
 	private JPanel contentPane;
-	private JTextField texto;
+	private JTextField txtFieldMsj;
 	private JLabel lblNombreUsuario;
 
 	private String name;
 
 
 	private static JList<String> listaConectadosSala = new JList<String>();
+
 	
 	
-	public Sala(PaqueteSala paqueteSala) {
-		this.name = paqueteSala.getName();
+	public Sala(Cliente cli) {
+		
+		this.name = cli.getPaqueteSala().getNombreSala();
+		setTitle(name);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 646, 300);
 		contentPane = new JPanel();
@@ -41,36 +48,52 @@ public class Sala extends JFrame  {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 33, 170, 171);
-		contentPane.add(scrollPane);
+		JScrollPane scrollPaneConectados = new JScrollPane();
+		scrollPaneConectados.setBounds(10, 33, 170, 171);
+		contentPane.add(scrollPaneConectados);
+		scrollPaneConectados.setViewportView(listaConectadosSala);
+		listaConectadosSala.setForeground(Color.WHITE);
+		listaConectadosSala.setBackground(Color.DARK_GRAY);
+		listaConectadosSala.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (arg0.getClickCount() == 2) {
+					if (listaConectadosSala.getSelectedValue() != null) {
+						if (!cli.getChatsActivos().containsKey(listaConectadosSala.getSelectedValue())) {
+							if (cli != null) {
+								Chat chat = new Chat(cli);
+								cli.getChatsActivos().put(listaConectadosSala.getSelectedValue(), chat);
+								chat.setTitle(listaConectadosSala.getSelectedValue());
+								chat.setVisible(true);
+							}
+						}
+					}
+				}
+			}
+		});
 		
-		JList listaUsuariosSala = new JList();
-		listaUsuariosSala.setForeground(Color.WHITE);
-		listaUsuariosSala.setBackground(Color.DARK_GRAY);
-		scrollPane.setViewportView(listaUsuariosSala);
 		
-		texto = new JTextField();
-		texto.setBounds(194, 209, 320, 41);
-		texto.setForeground(Color.WHITE);
-		texto.setBackground(Color.DARK_GRAY);
-		texto.setCaretColor(Color.WHITE);
-		contentPane.add(texto);
-		texto.setColumns(10);
+		txtFieldMsj = new JTextField();
+		txtFieldMsj.setBounds(194, 209, 320, 41);
+		txtFieldMsj.setForeground(Color.WHITE);
+		txtFieldMsj.setBackground(Color.DARK_GRAY);
+		txtFieldMsj.setCaretColor(Color.WHITE);
+		contentPane.add(txtFieldMsj);
+		txtFieldMsj.setColumns(10);
 		
 		JButton btnEnviar = new JButton("Enviar");
 		btnEnviar.setBounds(518, 209, 97, 41);
 		contentPane.add(btnEnviar);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(194, 11, 421, 194);
-		contentPane.add(scrollPane_1);
+		JScrollPane scrollPaneChat = new JScrollPane();
+		scrollPaneChat.setBounds(194, 11, 421, 194);
+		contentPane.add(scrollPaneChat);
 		
 		JTextPane chat = new JTextPane();
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
-		chat.setText(paqueteSala.getHistorial());
-		scrollPane_1.setViewportView(chat);
+		chat.setText(cli.getPaqueteSala().getHistorial());
+		scrollPaneChat.setViewportView(chat);
 		
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
 		btnDesconectarse.setBounds(10, 209, 170, 41);
@@ -83,7 +106,9 @@ public class Sala extends JFrame  {
 		lblNombreUsuario = new JLabel("");
 		lblNombreUsuario.setBounds(57, 11, 123, 14);
 		contentPane.add(lblNombreUsuario);
+		setVisible(true);
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.Component#getName()
@@ -104,7 +129,7 @@ public class Sala extends JFrame  {
 		this.lblNombreUsuario.setText(nombre);
 	}
 	
-	public static JList<String> getListaConectadosSala() {
+	public JList<String> getListaConectadosSala() {
 		return listaConectadosSala;
 	}
 	public static void setListaConectadosSala(JList<String> listaConectadosSala) {

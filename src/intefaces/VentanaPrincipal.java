@@ -151,8 +151,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 					if (listaSalas.getSelectedValue() != null) {
 						if (!cliente.getChatsActivos().containsKey(listaSalas.getSelectedValue())) {
 							if (cliente != null) {
-								cliente.getPaqueteSala().setName(listaSalas.getSelectedValue());
-								cliente.getPaqueteSala().setCliente(cliente.getName());
+								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
+								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
 								synchronized (cliente) {
 									cliente.setAccion(Comando.ENTRARSALA);
 									cliente.notify();

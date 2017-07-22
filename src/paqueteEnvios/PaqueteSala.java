@@ -7,7 +7,7 @@ import intefaces.Sala;
 
 public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	
-	private String name;
+	private String nombreSala;
 	private String historial = "";
 	private ArrayList<String> UsuariosConectados = new ArrayList<String>();
 	private String cliente;
@@ -15,15 +15,15 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	
 
 	public PaqueteSala(String name, String chat){
-		this.name = name;
+		this.nombreSala = name;
 		this.historial = chat;
 	}
 	
 	public PaqueteSala() {
 	}
 
-	public String getName() {
-		return name;
+	public String getNombreSala() {
+		return nombreSala;
 	}
 	
 	
@@ -49,8 +49,8 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 		return obj;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNombreSala(String name) {
+		this.nombreSala = name;
 	}
 	
 	public String getCliente() {

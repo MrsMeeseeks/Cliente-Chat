@@ -45,7 +45,7 @@ public class MenuCreacionSala extends JFrame {
 				if(!textFieldSala.getText().equals("")){
 					name = textFieldSala.getText();
 					//Sala sala = new Sala(name);
-					cliente.getPaqueteSala().setName(name);
+					cliente.getPaqueteSala().setNombreSala(name);
 					cliente.setAccion(Comando.NEWSALA);
 					synchronized (cliente) {
 						cliente.notify();
@@ -76,7 +76,7 @@ public class MenuCreacionSala extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!textFieldSala.getText().equals("")){
 					name = textFieldSala.getText();
-					cliente.getPaqueteSala().setName(name);
+					cliente.getPaqueteSala().setNombreSala(name);
 					cliente.getPaqueteUsuario().setComando(Comando.NEWSALA);
 					cliente.notify();
 					dispose();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
@@ -43,7 +44,7 @@ public class EscuchaServer extends Thread {
 			ArrayList<String> diferenciaContactos = new ArrayList<String>();
 
 			String objetoLeido;
-			
+
 			objetoLeido = (String) entrada.readObject();
 			while (true) {
 
@@ -57,7 +58,7 @@ public class EscuchaServer extends Thread {
 
 				case Comando.CONEXION:
 					usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuariosYSalas.class)
-							.getUsuarios();
+					.getUsuarios();
 					for (String usuario : usuariosConectados) {
 						if (!usuariosAntiguos.contains(usuario)) {
 							usuariosAntiguos.add(usuario);
@@ -69,7 +70,7 @@ public class EscuchaServer extends Thread {
 						for (String usuario : diferenciaContactos) {
 							if (cliente.getChatsActivos().containsKey(usuario)) {
 								cliente.getChatsActivos().get(usuario).getChat()
-										.append("El usuario: " + usuario + " se ha desconectado\n");
+								.append("El usuario: " + usuario + " se ha desconectado\n");
 							}
 							usuariosAntiguos.remove(usuario);
 						}
@@ -78,7 +79,7 @@ public class EscuchaServer extends Thread {
 					actualizarLista(cliente);
 					break;
 
-				// ACA RECIBI EL MENSAJE DEL OTRO CLIENTE
+					// ACA RECIBI EL MENSAJE DEL OTRO CLIENTE
 				case Comando.TALK:
 
 					cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
@@ -92,8 +93,8 @@ public class EscuchaServer extends Thread {
 						cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserEmisor(), chat);
 					}
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat()
-							.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
-									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
+					.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
+							+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 					break;
 
@@ -105,7 +106,7 @@ public class EscuchaServer extends Thread {
 						VentanaPrincipal.setTextoChatGeneral(cliente.getPaqueteMensaje().getUserEmisor(),cliente.getPaqueteMensaje().getMensaje());
 					}
 					break;
-					
+
 				case Comando.MP:
 
 					cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
@@ -119,11 +120,11 @@ public class EscuchaServer extends Thread {
 						cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserEmisor(), chat);
 					}
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat()
-							.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
-									+ cliente.getPaqueteMensaje().getMensaje() + "\n");
+					.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
+							+ cliente.getPaqueteMensaje().getMensaje() + "\n");
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 					break;
-					
+
 				case Comando.NEWSALA:
 					cliente.getPaqueteUsuario().setMensaje(paquete.getMensaje());
 					if( paquete.getMensaje().equals(Paquete.msjExito)) {
@@ -135,27 +136,28 @@ public class EscuchaServer extends Thread {
 						JOptionPane.showMessageDialog(null, "Sala ya existente.");
 					}
 					break;
-					
+
 				case Comando.ENTRARSALA:
-					cliente.setPaqueteSala((PaqueteSala) gson.fromJson(objetoLeido, PaqueteSala.class));
+					cliente.setPaqueteSala( gson.fromJson(objetoLeido, PaqueteSala.class));
 
 					if (cliente.getPaqueteSala().getMensaje().equals(Paquete.msjExito)) {
-						if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getName()))) {
-							sala = new Sala(cliente.getPaqueteSala());
-
-							sala.setTitle(cliente.getPaqueteSala().getName());
-							sala.setVisible(true);
-
-							cliente.getSalasActivas().put(cliente.getPaqueteSala().getName(), sala);
+						if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getNombreSala()))) {
+							sala = new Sala(cliente);
+							cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
 						} else {
 							JOptionPane.showMessageDialog(null, "Ya se encuentra conectado a esta sala");
 						} 
 					} else {
-						JOptionPane.showMessageDialog(null, "Error al intentar entrar en la sala " + cliente.getPaqueteSala().getName());
+						JOptionPane.showMessageDialog(null, "Error al intentar entrar en la sala " + cliente.getPaqueteSala().getNombreSala());
 					}
 					break;
+
+				case Comando.CONEXIONSALA: 
+					PaqueteSala paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
+					actualizarListaConectadosSala(paqueteSala);
+					break;
 				}
-				
+
 				synchronized (entrada) {
 					objetoLeido = (String) entrada.readObject();
 				}
@@ -163,6 +165,29 @@ public class EscuchaServer extends Thread {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fallo la conexión con el servidor.");
 			e.printStackTrace();
+		}
+	}
+
+	private void actualizarListaConectadosSala(PaqueteSala paqueteSala) {
+		DefaultListModel<String> modelo = new DefaultListModel<String>();
+		synchronized (cliente) {
+			try {
+				cliente.wait(300);
+				cliente.getSalasActivas().get(paqueteSala.getNombreSala())
+					.getListaConectadosSala().removeAll();
+			
+				if (paqueteSala.getUsuariosConectados() != null) {
+					paqueteSala.getUsuariosConectados()
+					.remove(cliente.getPaqueteUsuario().getUsername());
+					for (String cad : paqueteSala.getUsuariosConectados()) {
+						modelo.addElement(cad);
+					}
+					cliente.getSalasActivas().get(paqueteSala.getNombreSala())
+					.getListaConectadosSala().setModel(modelo);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -174,7 +199,7 @@ public class EscuchaServer extends Thread {
 				VentanaPrincipal.getListConectados().removeAll();
 				if (cliente.getPaqueteUsuario().getListaDeConectados() != null) {
 					cliente.getPaqueteUsuario().getListaDeConectados()
-							.remove(cliente.getPaqueteUsuario().getUsername());
+					.remove(cliente.getPaqueteUsuario().getUsername());
 					for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
@@ -186,7 +211,7 @@ public class EscuchaServer extends Thread {
 			}
 		}
 	}
-	
+
 	private void actualizarListaSalas(final Cliente cliente) {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		synchronized (cliente) {
