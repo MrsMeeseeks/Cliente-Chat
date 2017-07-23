@@ -5,41 +5,42 @@ import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
-import paqueteEnvios.Paquete;
-import paqueteEnvios.PaqueteSala;
+import paqueteEnvios.Comando;
 
-import javax.swing.JTextPane;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Sala extends JFrame  {
 
 	private JPanel contentPane;
-	private JTextField txtFieldMsj;
+	private JTextField texto;
+
 	private JLabel lblNombreUsuario;
+	private JTextArea chat;
 
-	private String name;
-
-
+	private String nombreSala;
+	private ArrayList<String> usuariosConectados = new ArrayList<String>();
+	
 	private static JList<String> listaConectadosSala = new JList<String>();
 
-	
-	
 	public Sala(Cliente cli) {
-		
-		this.name = cli.getPaqueteSala().getNombreSala();
-		setTitle(name);
-		
+		this.nombreSala = cli.getPaqueteSala().getNombreSala();
+		setTitle(nombreSala);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 646, 300);
 		contentPane = new JPanel();
@@ -47,6 +48,19 @@ public class Sala extends JFrame  {
 		contentPane.setBackground(Color.GRAY);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		JScrollPane scrollPaneChat = new JScrollPane();
+		scrollPaneChat.setBounds(194, 11, 421, 194);
+		contentPane.add(scrollPaneChat);
+		
+		
+		chat = new JTextArea();
+		chat.setForeground(Color.WHITE);
+		chat.setBackground(Color.DARK_GRAY);
+		chat.setText(cli.getPaqueteSala().getHistorial());
+		chat.setEnabled(false);
+		chat.setEditable(false);
+		scrollPaneChat.setViewportView(chat);
 		
 		JScrollPane scrollPaneConectados = new JScrollPane();
 		scrollPaneConectados.setBounds(10, 33, 170, 171);
@@ -73,27 +87,83 @@ public class Sala extends JFrame  {
 		});
 		
 		
-		txtFieldMsj = new JTextField();
-		txtFieldMsj.setBounds(194, 209, 320, 41);
-		txtFieldMsj.setForeground(Color.WHITE);
-		txtFieldMsj.setBackground(Color.DARK_GRAY);
-		txtFieldMsj.setCaretColor(Color.WHITE);
-		contentPane.add(txtFieldMsj);
-		txtFieldMsj.setColumns(10);
+		texto = new JTextField();
+		texto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
+
+					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+					
+					cli.setAccion(Comando.CHATSALA);
+					
+					cli.getPaqueteMensajeSala().setUserEmisor(cli.getPaqueteUsuario().getUsername());
+					cli.getPaqueteMensajeSala().setUsersDestino(usuariosConectados);
+					cli.getPaqueteMensajeSala().setMensaje(texto.getText());
+					cli.getPaqueteMensajeSala().setNombreSala(nombreSala);
+
+					texto.setText("");
+					texto.requestFocus();
+					synchronized (cli) {
+						cli.notify();
+					}
+				}
+				else if(!texto.getText().equals("")){
+					String[] words;
+					words = texto.getText().substring(1).split(" ", 2);
+					if (words.length > 1 && words[1] != null) {
+						words[1] = words[1].trim();
+					}
+					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=nombreSala){
+						chat.append(nombreSala + " --> " + words[0] +":" + words[1] + "\n");
+						cli.setAccion(Comando.MP);
+						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername() );
+						cli.getPaqueteMensaje().setUserReceptor(words[0]);
+						cli.getPaqueteMensaje().setMensaje(words[1]);
+
+						if(cli.getChatsActivos().containsKey(cli.getPaqueteMensaje().getUserReceptor())){
+							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getChat()
+							.append(nombreSala + ": "
+									+ cli.getPaqueteMensaje().getMensaje() + "\n");
+							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
+						}
+						else
+						{
+							Chat chatPropio = new Chat(cli);
+
+							chatPropio.setTitle(cli.getPaqueteMensaje().getUserReceptor());
+							chatPropio.setVisible(true);
+
+							cli.getChatsActivos().put(cli.getPaqueteMensaje().getUserReceptor(), chatPropio);
+							chatPropio.getChat().append(nombreSala + ": "
+									+ cli.getPaqueteMensaje().getMensaje() + "\n");
+						}
+						synchronized (cli) {
+							cli.notify();
+						}
+						texto.setText("");
+
+						texto.requestFocus();
+					}
+					else
+					{
+						chat.append("No Existe el usuario " + words[0] + "\n");
+
+						texto.setText("");
+						texto.requestFocus();
+					}
+				}
+			}
+		});
+		texto.setBounds(194, 209, 320, 41);
+		texto.setForeground(Color.WHITE);
+		texto.setBackground(Color.DARK_GRAY);
+		texto.setCaretColor(Color.WHITE);
+		contentPane.add(texto);
+		texto.setColumns(10);
 		
 		JButton btnEnviar = new JButton("Enviar");
 		btnEnviar.setBounds(518, 209, 97, 41);
 		contentPane.add(btnEnviar);
-		
-		JScrollPane scrollPaneChat = new JScrollPane();
-		scrollPaneChat.setBounds(194, 11, 421, 194);
-		contentPane.add(scrollPaneChat);
-		
-		JTextPane chat = new JTextPane();
-		chat.setForeground(Color.WHITE);
-		chat.setBackground(Color.DARK_GRAY);
-		chat.setText(cli.getPaqueteSala().getHistorial());
-		scrollPaneChat.setViewportView(chat);
 		
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
 		btnDesconectarse.setBounds(10, 209, 170, 41);
@@ -109,20 +179,12 @@ public class Sala extends JFrame  {
 		setVisible(true);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.Component#getName()
-	 */
 	public String getName() {
-		return name;
+		return nombreSala;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.Component#setName(java.lang.String)
-	 */
 	public void setName(String name) {
-		this.name = name;
+		this.nombreSala = name;
 	}
 	
 	public void setNombreUsuario(String nombre){
@@ -135,15 +197,29 @@ public class Sala extends JFrame  {
 	public static void setListaConectadosSala(JList<String> listaConectadosSala) {
 		Sala.listaConectadosSala = listaConectadosSala;
 	}
-//	@Override
-//	public void run() {
-//		setTitle(name);
-//		labelNombreUsuario.setText(user);
-//		refreshListCon(cliente);
-//		refreshListSalas(cliente);
-//		enviarATodos.setEnabled(true);
-//		texto.setEditable(true);
-//		chat.setEnabled(true);
-//	}
+
+	public JTextArea getChat() {
+		return chat;
+	}
+
+	public void setChat(JTextArea chat) {
+		this.chat = chat;
+	}
+	
+	public JTextField getTexto() {
+		return texto;
+	}
+
+	public void setTexto(JTextField texto) {
+		this.texto = texto;
+	}
+
+	public ArrayList<String> getUsuariosConectados() {
+		return usuariosConectados;
+	}
+
+	public void setUsuariosConectados(ArrayList<String> usuariosConectados) {
+		this.usuariosConectados = usuariosConectados;
+	}
 	
 }

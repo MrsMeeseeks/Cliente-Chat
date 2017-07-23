@@ -18,8 +18,9 @@ import intefaces.Sala;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteDeUsuariosYSalas;
-import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
+import paqueteEnvios.Comando;
+import paqueteEnvios.PaqueteMensajeSala;
 import paqueteEnvios.PaqueteSala;
 import paqueteEnvios.PaqueteUsuario;
 
@@ -30,6 +31,7 @@ public class Cliente extends Thread {
 	private ObjectOutputStream salida;
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
+	private PaqueteMensajeSala paqueteMensajeSala = new PaqueteMensajeSala();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
 	private Map<String, Sala> salasActivas = new HashMap<>();
 	private VentanaPrincipal chat;
@@ -96,6 +98,12 @@ public class Cliente extends Thread {
 
 						break;
 
+					case Comando.CHATSALA:
+						paqueteMensajeSala.setComando(Comando.CHATSALA);
+						// Le envio el paquete al servidor
+						salida.writeObject(gson.toJson(paqueteMensajeSala));
+						break;	
+						
 					case Comando.CHATALL:
 						paqueteMensaje.setComando(Comando.CHATALL);
 						// Le envio el paquete al servidor
@@ -270,6 +278,16 @@ public class Cliente extends Thread {
 
 	public void setPaqueteSala(PaqueteSala paqueteSala) {
 		this.paqueteSala = paqueteSala;
+	}
+
+	public PaqueteMensajeSala getPaqueteMensajeSala() {
+		return paqueteMensajeSala;
+	}
+
+	public void setPaqueteMensajeSala(PaqueteMensajeSala paqueteMensajeSala) {
+		this.paqueteMensajeSala.setMensaje(paqueteMensajeSala.getMensaje());
+		this.paqueteMensajeSala.setUserEmisor(paqueteMensajeSala.getUserEmisor());
+		this.paqueteMensajeSala.setUsersDestino(paqueteMensajeSala.getUsersDestino());
 	}
 
 }

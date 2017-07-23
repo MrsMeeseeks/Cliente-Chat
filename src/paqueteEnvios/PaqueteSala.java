@@ -9,6 +9,8 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	
 	private String nombreSala;
 	private String historial = "";
+	private String texto;
+
 	private ArrayList<String> UsuariosConectados = new ArrayList<String>();
 	private String cliente;
 	
@@ -59,6 +61,15 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 
 	public void setCliente(String cliente) {
 		this.cliente = cliente;
+	}
+
+
+	public String getTexto() {
+		return texto;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
 	}
 
 }

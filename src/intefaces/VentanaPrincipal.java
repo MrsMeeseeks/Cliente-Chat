@@ -149,7 +149,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			public void mouseClicked(MouseEvent arg0) {
 				if (arg0.getClickCount() == 2) {
 					if (listaSalas.getSelectedValue() != null) {
-						if (!cliente.getChatsActivos().containsKey(listaSalas.getSelectedValue())) {
+						if (!cliente.getSalasActivas().containsKey(listaSalas.getSelectedValue())) {
 							if (cliente != null) {
 								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
 								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());

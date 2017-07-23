@@ -19,6 +19,7 @@ import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteDeSalas;
 import paqueteEnvios.PaqueteDeUsuariosYSalas;
 import paqueteEnvios.PaqueteMensaje;
+import paqueteEnvios.PaqueteMensajeSala;
 import paqueteEnvios.PaqueteSala;
 
 public class EscuchaServer extends Thread {
@@ -98,6 +99,26 @@ public class EscuchaServer extends Thread {
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 					break;
 
+				case Comando.CHATSALA:
+					
+					PaqueteMensajeSala paq = new PaqueteMensajeSala();
+					paq = (PaqueteMensajeSala) gson.fromJson(objetoLeido, PaqueteMensajeSala.class);
+					
+					cliente.getPaqueteMensajeSala().setMensaje(paq.getMensaje());
+					cliente.getPaqueteMensajeSala().setNombreSala(paq.getNombreSala());
+					cliente.getPaqueteMensajeSala().setUsersDestino(paq.getUsersDestino());
+					cliente.getPaqueteMensajeSala().setUserEmisor(paq.getUserEmisor());
+			
+					
+					if((cliente.getSalasActivas().containsKey(cliente.getPaqueteMensajeSala().getNombreSala()))){
+						
+						cliente.getSalasActivas().get(cliente.getPaqueteMensajeSala().getNombreSala()).getChat()
+						.append(cliente.getPaqueteMensajeSala().getUserEmisor() + ": " + cliente.getPaqueteMensajeSala().getMensaje() + "\n");
+						cliente.getSalasActivas().get(cliente.getPaqueteMensajeSala().getNombreSala()).getTexto().grabFocus();
+						
+					}
+					break;
+
 				case Comando.CHATALL:
 
 					cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
@@ -152,8 +173,9 @@ public class EscuchaServer extends Thread {
 					}
 					break;
 
-				case Comando.CONEXIONSALA: 
+				case Comando.CONEXIONSALA:
 					PaqueteSala paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
+
 					actualizarListaConectadosSala(paqueteSala);
 					break;
 				}
@@ -174,16 +196,16 @@ public class EscuchaServer extends Thread {
 			try {
 				cliente.wait(300);
 				cliente.getSalasActivas().get(paqueteSala.getNombreSala())
-					.getListaConectadosSala().removeAll();
-			
+				.getListaConectadosSala().removeAll();
+
 				if (paqueteSala.getUsuariosConectados() != null) {
 					paqueteSala.getUsuariosConectados()
 					.remove(cliente.getPaqueteUsuario().getUsername());
 					for (String cad : paqueteSala.getUsuariosConectados()) {
 						modelo.addElement(cad);
 					}
-					cliente.getSalasActivas().get(paqueteSala.getNombreSala())
-					.getListaConectadosSala().setModel(modelo);
+					cliente.getSalasActivas().get(paqueteSala.getNombreSala()).getListaConectadosSala().setModel(modelo);
+					cliente.getSalasActivas().get(paqueteSala.getNombreSala()).setUsuariosConectados(paqueteSala.getUsuariosConectados());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
