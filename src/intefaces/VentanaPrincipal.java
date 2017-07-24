@@ -46,8 +46,6 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	private Cliente cliente;
 	private PaqueteUsuario paqueteUsuario;
 	private static int cantUsuariosCon;
-
-
 	/*
 	 * 
 	 */

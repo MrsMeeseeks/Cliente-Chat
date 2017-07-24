@@ -15,14 +15,18 @@ import cliente.Cliente;
 import paqueteEnvios.Comando;
 
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Sala extends JFrame  {
 
@@ -37,6 +41,21 @@ public class Sala extends JFrame  {
 	private static JList<String> listaConectadosSala = new JList<String>();
 
 	public Sala(Cliente cli) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+				if (abrirVentanaConfirmaSalir()) {
+					if (cli != null) {
+						synchronized (cli) {
+							cli.setAccion(Comando.DESCONECTAR);
+							cli.notify();
+						}
+						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					}
+					System.exit(0);
+				}
+			}
+		});
 		this.nombreSala = cli.getPaqueteSala().getNombreSala();
 		setTitle(nombreSala);
 		setResizable(false);
@@ -280,6 +299,21 @@ public class Sala extends JFrame  {
 		contentPane.add(btnEnviar);
 
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
+		btnDesconectarse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (abrirVentanaConfirmaSalir()) {
+					if (cli != null) {
+						synchronized (cli) {
+							cli.setAccion(Comando.DESCONECTAR);
+							cli.notify();
+						}
+						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					}
+					System.exit(0);
+				}
+			}
+		});
 		btnDesconectarse.setBounds(10, 209, 170, 41);
 		contentPane.add(btnDesconectarse);
 
@@ -328,4 +362,13 @@ public class Sala extends JFrame  {
 		this.texto = texto;
 	}
 
+	private boolean abrirVentanaConfirmaSalir() {
+		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea salir del Chat?", "Confirmación",
+				JOptionPane.YES_NO_OPTION);
+		if (opcion == JOptionPane.YES_OPTION) {
+			return true;
+		}
+		return false;
+	}
+	
 }

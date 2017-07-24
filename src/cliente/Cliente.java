@@ -38,9 +38,6 @@ public class Cliente extends Thread {
 	private Map<String, Sala> salasActivas = new HashMap<>();
 	private VentanaPrincipal chat;
 
-	/*
-	 * 
-	 */
 	private PaqueteSala paqueteSala = new PaqueteSala();
 
 	private int accion; //accion que realiza el usuario
