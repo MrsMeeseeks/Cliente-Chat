@@ -162,6 +162,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			}
 		});
 		listaSalas.setModel(modeloSalas);
+		
+		//comentario para poder commitear
 
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(209, 11, 443, 436);
