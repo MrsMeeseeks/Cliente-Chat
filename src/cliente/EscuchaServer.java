@@ -199,6 +199,7 @@ public class EscuchaServer extends Thread {
 					if (cliente.getPaqueteSala().getMsj().equals(Paquete.msjExito)) {
 						if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getNombreSala()))) {
 							sala = new Sala(cliente);
+							sala.getChat().setText(cliente.getPaqueteSala().getTexto());
 							cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
 						} else {
 							JOptionPane.showMessageDialog(null, "Ya se encuentra conectado a esta sala");
