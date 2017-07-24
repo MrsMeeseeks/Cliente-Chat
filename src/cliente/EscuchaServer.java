@@ -180,6 +180,18 @@ public class EscuchaServer extends Thread {
 						JOptionPane.showMessageDialog(null, "Sala ya existente.");
 					}
 					break;
+					
+				case Comando.ELIMINARSALA:
+					cliente.getPaqueteUsuario().setMsj(paquete.getMsj());
+//					if( paquete.getMsj().equals(Paquete.msjExito)) {
+//						ArrayList<String> listadoSalas = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeSalas.class)
+//								.getSalas();
+//						cliente.getPaqueteUsuario().setListaDeSalas(listadoSalas);
+//						actualizarListaSalas(cliente);
+//					} else {
+//						JOptionPane.showMessageDialog(null, "Sala ya existente.");
+//					}
+					break;
 
 				case Comando.ENTRARSALA:
 					cliente.setPaqueteSala( gson.fromJson(objetoLeido, PaqueteSala.class));

@@ -26,7 +26,7 @@ public class MenuCreacionSala extends JFrame {
 	public MenuCreacionSala(Cliente cli) {
 		this.cliente = cli;
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 189, 235);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -54,7 +54,7 @@ public class MenuCreacionSala extends JFrame {
 				}
 			}
 		});
-		btnCrearSala.setBounds(132, 129, 154, 46);
+		btnCrearSala.setBounds(10, 86, 154, 46);
 		contentPane.add(btnCrearSala);
 		
 		JButton btnSalir = new JButton("Salir");
@@ -63,12 +63,12 @@ public class MenuCreacionSala extends JFrame {
 				dispose();
 			}
 		});
-		btnSalir.setBounds(132, 186, 154, 46);
+		btnSalir.setBounds(10, 143, 154, 46);
 		contentPane.add(btnSalir);
 		
 		JLabel lblNombreSala = new JLabel("Nombre de la Sala");
 		//lblNombreSala.setHorizontalAlignment();
-		lblNombreSala.setBounds(132, 22, 154, 37);
+		lblNombreSala.setBounds(10, 11, 154, 37);
 		contentPane.add(lblNombreSala);
 		
 		textFieldSala = new JTextField();
@@ -83,7 +83,7 @@ public class MenuCreacionSala extends JFrame {
 				}
 			}
 		});
-		textFieldSala.setBounds(132, 70, 154, 30);
+		textFieldSala.setBounds(10, 45, 154, 30);
 		contentPane.add(textFieldSala);
 		textFieldSala.setColumns(10);
 	}

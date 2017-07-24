@@ -96,6 +96,11 @@ public class Cliente extends Thread {
 						salida.writeObject(gson.toJson(paqueteSala));
 						break;
 
+					case Comando.ELIMINARSALA:
+						paqueteSala.setComando(Comando.ELIMINARSALA);
+						salida.writeObject(gson.toJson(paqueteSala));
+						break;
+						
 					case Comando.TALK:
 						paqueteMensaje.setComando(Comando.TALK);
 						// Le envio el paquete al servidor

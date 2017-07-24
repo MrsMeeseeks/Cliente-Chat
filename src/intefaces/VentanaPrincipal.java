@@ -328,8 +328,26 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			}
 		});
 		btnCrearSala.setEnabled(true);
-		btnCrearSala.setBounds(22, 457, 167, 39);
+		btnCrearSala.setBounds(18, 452, 171, 16);
 		contentPane.add(btnCrearSala);
+		
+		JButton btnNewButton = new JButton("Eliminar Sala");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (abrirVentanaConfirmaEliminarSalaChat()) {
+					if (cliente != null) {
+						synchronized (cliente) {
+							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue().toString());
+							cliente.setAccion(Comando.ELIMINARSALA);
+							cliente.notify();
+						}
+						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					}
+				}				
+			}
+		});
+		btnNewButton.setBounds(18, 473, 171, 16);
+		contentPane.add(btnNewButton);
 	}
 
 	private boolean abrirVentanaConfirmaSalir() {
@@ -339,7 +357,17 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			return true;
 		}
 		return false;
-	}
+	}	
+
+	
+	private boolean abrirVentanaConfirmaEliminarSalaChat() {
+		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea Eliminar Sala De Chat?", "Confirmación",
+				JOptionPane.YES_NO_OPTION);
+		if (opcion == JOptionPane.YES_OPTION) {
+			return true;
+		}
+		return false;
+	}	
 
 	public PaqueteUsuario getPaqueteUsuario() {
 		return paqueteUsuario;

@@ -14,5 +14,6 @@ public class Comando {
 	public static final int CONEXIONSALA = 9;
 	public static final int CHATSALA = 10;
 	public static final int MENCIONSALA = 11;
+	public static final int ELIMINARSALA = 12;
 	
 }
