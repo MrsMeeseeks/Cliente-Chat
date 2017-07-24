@@ -59,20 +59,20 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	private static JList<String> listaUsuariosChatGeneral = new JList<String>();
 	private static JList<String> listaSalas = new JList<String>();
 
-	
+
 	private static JTextArea chat;
 	private static JButton enviarATodos;
 	private JLabel labelNombreUsuario;
 
 	private JTextField texto;
-	
-	
+
+
 	public VentanaPrincipal(Cliente cli) {
 
 
 		cliente = cli;
 		user = cliente.getPaqueteUsuario().getUsername();
-	
+
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 673, 537);
@@ -132,30 +132,30 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		});
 
 		listaUsuariosChatGeneral.setModel(modelo);
-		
+
 		JScrollPane panelListaSalas = new JScrollPane();
 		panelListaSalas.setBounds(18, 329, 171, 117);
 		contentPane.add(panelListaSalas);
 		panelListaSalas.setViewportView(listaSalas);
 		listaSalas.setForeground(Color.WHITE);
 		listaSalas.setBackground(Color.DARK_GRAY);
-		
 
-		
+
+
 		listaSalas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (arg0.getClickCount() == 2) {
 					if (listaSalas.getSelectedValue() != null) {
 						if (!cliente.getSalasActivas().containsKey(listaSalas.getSelectedValue())) {
-							if (cliente != null) {
 								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
 								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
 								synchronized (cliente) {
 									cliente.setAccion(Comando.ENTRARSALA);
 									cliente.notify();
 								}
-							}
+						} else {
+							JOptionPane.showMessageDialog(null, "Ya se encuentra en esta sala.");
 						}
 					}
 				}
@@ -300,7 +300,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		enviarATodos.setBounds(521, 458, 131, 39);
 		contentPane.add(enviarATodos);
 
-		
+
 
 
 		labelNombreUsuario = new JLabel("");
@@ -320,7 +320,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		labelSalas.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		labelSalas.setBounds(22, 306, 111, 16);
 		contentPane.add(labelSalas);
-		
+
 		JButton btnCrearSala = new JButton("Crear Sala");
 		btnCrearSala.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -330,20 +330,22 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		btnCrearSala.setEnabled(true);
 		btnCrearSala.setBounds(18, 452, 171, 16);
 		contentPane.add(btnCrearSala);
-		
+
 		JButton btnNewButton = new JButton("Eliminar Sala");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (abrirVentanaConfirmaEliminarSalaChat()) {
-					if (cliente != null) {
-						synchronized (cliente) {
-							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue().toString());
-							cliente.setAccion(Comando.ELIMINARSALA);
-							cliente.notify();
-						}
-						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					}
-				}				
+				if(listaSalas.getSelectedValue()!=null) {
+					if (abrirVentanaConfirmaEliminarSalaChat()) {
+							synchronized (cliente) {
+								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
+								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
+								cliente.setAccion(Comando.ELIMINARSALA);
+								cliente.notify();
+							}
+					} 
+				} else {
+					JOptionPane.showMessageDialog(null, "Primero seleccione la sala que quiere eliminar.");
+				}
 			}
 		});
 		btnNewButton.setBounds(18, 473, 171, 16);
@@ -359,7 +361,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		return false;
 	}	
 
-	
+
 	private boolean abrirVentanaConfirmaEliminarSalaChat() {
 		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea Eliminar Sala De Chat?", "Confirmación",
 				JOptionPane.YES_NO_OPTION);
@@ -380,7 +382,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	public static JList<String> getListConectados() {
 		return listaUsuariosChatGeneral;
 	}
-	
+
 	public static JList<String> getListSalas() {
 		return listaSalas;
 	}
@@ -400,7 +402,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		setVisible(true);
-		
+
 		while (cliente.getState() == Thread.State.WAITING) {
 		}
 

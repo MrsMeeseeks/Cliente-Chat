@@ -44,22 +44,12 @@ public class Sala extends JFrame  {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent arg0) {
-				if (abrirVentanaConfirmaSalir()) {
-					if (cli != null) {
-						synchronized (cli) {
-							cli.setAccion(Comando.DESCONECTAR);
-							cli.notify();
-						}
-						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					}
-					System.exit(0);
-				}
+				dispose();
 			}
 		});
 		this.nombreSala = cli.getPaqueteSala().getNombreSala();
 		setTitle(nombreSala);
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 646, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

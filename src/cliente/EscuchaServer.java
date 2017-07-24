@@ -182,15 +182,19 @@ public class EscuchaServer extends Thread {
 					break;
 					
 				case Comando.ELIMINARSALA:
-					cliente.getPaqueteUsuario().setMsj(paquete.getMsj());
-//					if( paquete.getMsj().equals(Paquete.msjExito)) {
-//						ArrayList<String> listadoSalas = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeSalas.class)
-//								.getSalas();
-//						cliente.getPaqueteUsuario().setListaDeSalas(listadoSalas);
-//						actualizarListaSalas(cliente);
-//					} else {
-//						JOptionPane.showMessageDialog(null, "Sala ya existente.");
-//					}
+					if(paquete.getMsj().equals(Paquete.msjExito)) {
+						PaqueteSala paqueteSala = (PaqueteSala) gson.fromJson(objetoLeido, PaqueteSala.class);
+						if(cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala())) {
+							JOptionPane.showMessageDialog(null, "La sala " + paqueteSala.getNombreSala() + " ha sido eliminada.");
+							cliente.getSalasActivas().get(paqueteSala.getNombreSala()).dispose();
+							cliente.getSalasActivas().remove(paqueteSala.getNombreSala());
+						}
+						cliente.getPaqueteUsuario().getListaDeSalas().remove(paqueteSala.getNombreSala());
+						actualizarListaSalas(cliente);
+						break;
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al tratar de eliminar la sala.");
+					}
 					break;
 
 				case Comando.ENTRARSALA:
