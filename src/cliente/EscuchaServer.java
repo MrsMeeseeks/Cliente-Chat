@@ -12,12 +12,14 @@ import com.google.gson.Gson;
 
 import intefaces.Chat;
 import intefaces.MenuInicio;
+import intefaces.Notificacion;
 import intefaces.Sala;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.Comando;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteDeSalas;
 import paqueteEnvios.PaqueteDeUsuariosYSalas;
+import paqueteEnvios.PaqueteMencion;
 import paqueteEnvios.PaqueteMensaje;
 import paqueteEnvios.PaqueteMensajeSala;
 import paqueteEnvios.PaqueteSala;
@@ -95,27 +97,48 @@ public class EscuchaServer extends Thread {
 					}
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat()
 					.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
-							+ cliente.getPaqueteMensaje().getMensaje() + "\n");
+							+ cliente.getPaqueteMensaje().getMsj() + "\n");
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 					break;
 
+				case Comando.MENCIONSALA:
+
+					PaqueteMencion paqMenc = new PaqueteMencion();
+					paqMenc = (PaqueteMencion) gson.fromJson(objetoLeido, PaqueteMencion.class);
+
+					cliente.getPaqueteMencion().setMsj(paqMenc.getMsj());
+					cliente.getPaqueteMencion().setUserEmisor(paqMenc.getUserEmisor());
+					cliente.getPaqueteMencion().setUserReceptor(paqMenc.getUserReceptor());
+					cliente.getPaqueteMencion().setNombreSala(paqMenc.getNombreSala());
+
+					if((cliente.getSalasActivas().containsKey(cliente.getPaqueteMencion().getNombreSala()))){
+						cliente.getSalasActivas().get(cliente.getPaqueteMencion().getNombreSala()).getChat()
+						.append(cliente.getPaqueteMencion().getUserEmisor() + ": " + cliente.getPaqueteMencion().getMsj() + "\n");
+						cliente.getSalasActivas().get(cliente.getPaqueteMencion().getNombreSala()).getTexto().grabFocus();
+					}
+
+					if ((cliente.getPaqueteUsuario().getUsername().equals(cliente.getPaqueteMencion().getUserReceptor()))) {
+						Notificacion notificacion = new Notificacion(cliente.getPaqueteMencion().getNombreSala(),cliente.getPaqueteMencion().getUserEmisor());
+						notificacion.displayTray();
+					}
+					break;
+
 				case Comando.CHATSALA:
-					
+
 					PaqueteMensajeSala paq = new PaqueteMensajeSala();
 					paq = (PaqueteMensajeSala) gson.fromJson(objetoLeido, PaqueteMensajeSala.class);
-					
-					cliente.getPaqueteMensajeSala().setMensaje(paq.getMensaje());
+
+					cliente.getPaqueteMensajeSala().setMsj(paq.getMsj());
 					cliente.getPaqueteMensajeSala().setNombreSala(paq.getNombreSala());
-					cliente.getPaqueteMensajeSala().setUsersDestino(paq.getUsersDestino());
 					cliente.getPaqueteMensajeSala().setUserEmisor(paq.getUserEmisor());
-			
-					
+
+
 					if((cliente.getSalasActivas().containsKey(cliente.getPaqueteMensajeSala().getNombreSala()))){
-						
+
 						cliente.getSalasActivas().get(cliente.getPaqueteMensajeSala().getNombreSala()).getChat()
-						.append(cliente.getPaqueteMensajeSala().getUserEmisor() + ": " + cliente.getPaqueteMensajeSala().getMensaje() + "\n");
+						.append(cliente.getPaqueteMensajeSala().getUserEmisor() + ": " + cliente.getPaqueteMensajeSala().getMsj() + "\n");
 						cliente.getSalasActivas().get(cliente.getPaqueteMensajeSala().getNombreSala()).getTexto().grabFocus();
-						
+
 					}
 					break;
 
@@ -124,7 +147,7 @@ public class EscuchaServer extends Thread {
 					cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
 					if (!cliente.getChatsActivos().containsKey("Sala")) {
 
-						VentanaPrincipal.setTextoChatGeneral(cliente.getPaqueteMensaje().getUserEmisor(),cliente.getPaqueteMensaje().getMensaje());
+						VentanaPrincipal.setTextoChatGeneral(cliente.getPaqueteMensaje().getUserEmisor(),cliente.getPaqueteMensaje().getMsj());
 					}
 					break;
 
@@ -142,13 +165,13 @@ public class EscuchaServer extends Thread {
 					}
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat()
 					.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
-							+ cliente.getPaqueteMensaje().getMensaje() + "\n");
+							+ cliente.getPaqueteMensaje().getMsj() + "\n");
 					cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 					break;
 
 				case Comando.NEWSALA:
-					cliente.getPaqueteUsuario().setMensaje(paquete.getMensaje());
-					if( paquete.getMensaje().equals(Paquete.msjExito)) {
+					cliente.getPaqueteUsuario().setMsj(paquete.getMsj());
+					if( paquete.getMsj().equals(Paquete.msjExito)) {
 						ArrayList<String> listadoSalas = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeSalas.class)
 								.getSalas();
 						cliente.getPaqueteUsuario().setListaDeSalas(listadoSalas);
@@ -161,7 +184,7 @@ public class EscuchaServer extends Thread {
 				case Comando.ENTRARSALA:
 					cliente.setPaqueteSala( gson.fromJson(objetoLeido, PaqueteSala.class));
 
-					if (cliente.getPaqueteSala().getMensaje().equals(Paquete.msjExito)) {
+					if (cliente.getPaqueteSala().getMsj().equals(Paquete.msjExito)) {
 						if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getNombreSala()))) {
 							sala = new Sala(cliente);
 							cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
@@ -175,7 +198,7 @@ public class EscuchaServer extends Thread {
 
 				case Comando.CONEXIONSALA:
 					PaqueteSala paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
-
+					//cliente.setPaqueteSala(paqueteSala);
 					actualizarListaConectadosSala(paqueteSala);
 					break;
 				}
@@ -194,7 +217,7 @@ public class EscuchaServer extends Thread {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		synchronized (cliente) {
 			try {
-				cliente.wait(300);
+				cliente.wait(5);
 				cliente.getSalasActivas().get(paqueteSala.getNombreSala())
 				.getListaConectadosSala().removeAll();
 
@@ -205,7 +228,6 @@ public class EscuchaServer extends Thread {
 						modelo.addElement(cad);
 					}
 					cliente.getSalasActivas().get(paqueteSala.getNombreSala()).getListaConectadosSala().setModel(modelo);
-					cliente.getSalasActivas().get(paqueteSala.getNombreSala()).setUsuariosConectados(paqueteSala.getUsuariosConectados());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

@@ -29,7 +29,7 @@ public class Paquete implements Serializable, Cloneable {
 		this.comando = comando;
 	}
 
-	public void setMensaje(String mensaje) {
+	public void setMsj(String mensaje) {
 		this.mensaje = mensaje;
 	}
 
@@ -41,7 +41,7 @@ public class Paquete implements Serializable, Cloneable {
 		this.comando = comando;
 	}
 
-	public String getMensaje() {
+	public String getMsj() {
 		return mensaje;
 	}
 

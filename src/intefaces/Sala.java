@@ -33,8 +33,7 @@ public class Sala extends JFrame  {
 	private JTextArea chat;
 
 	private String nombreSala;
-	private ArrayList<String> usuariosConectados = new ArrayList<String>();
-	
+
 	private static JList<String> listaConectadosSala = new JList<String>();
 
 	public Sala(Cliente cli) {
@@ -48,12 +47,12 @@ public class Sala extends JFrame  {
 		contentPane.setBackground(Color.GRAY);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JScrollPane scrollPaneChat = new JScrollPane();
 		scrollPaneChat.setBounds(194, 11, 421, 194);
 		contentPane.add(scrollPaneChat);
-		
-		
+
+
 		chat = new JTextArea();
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
@@ -61,7 +60,7 @@ public class Sala extends JFrame  {
 		chat.setEnabled(false);
 		chat.setEditable(false);
 		scrollPaneChat.setViewportView(chat);
-		
+
 		JScrollPane scrollPaneConectados = new JScrollPane();
 		scrollPaneConectados.setBounds(10, 33, 170, 171);
 		contentPane.add(scrollPaneConectados);
@@ -85,20 +84,18 @@ public class Sala extends JFrame  {
 				}
 			}
 		});
-		
-		
+
+
 		texto = new JTextField();
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
+				if (!texto.getText().equals("") && !texto.getText().startsWith("@") && !texto.getText().contains(" @")) {
 
 					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
-					
+
 					cli.setAccion(Comando.CHATSALA);
-					
 					cli.getPaqueteMensajeSala().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-					cli.getPaqueteMensajeSala().setUsersDestino(usuariosConectados);
-					cli.getPaqueteMensajeSala().setMensaje(texto.getText());
+					cli.getPaqueteMensajeSala().setMsj(texto.getText());
 					cli.getPaqueteMensajeSala().setNombreSala(nombreSala);
 
 					texto.setText("");
@@ -107,26 +104,26 @@ public class Sala extends JFrame  {
 						cli.notify();
 					}
 				}
-				else if(!texto.getText().equals("")){
+				else if(!texto.getText().equals("") && texto.getText().startsWith("@")){
 					String[] words;
 					words = texto.getText().substring(1).split(" ", 2);
 					if (words.length > 1 && words[1] != null) {
 						words[1] = words[1].trim();
 					}
-					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=nombreSala){
-						chat.append(nombreSala + " --> " + words[0] +":" + words[1] + "\n");
+					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=cli.getPaqueteUsuario().getUsername() && words.length > 1 && words[1]!=null){
+						//chat.append(cli.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
 						cli.setAccion(Comando.MP);
-						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername() );
+						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername());
 						cli.getPaqueteMensaje().setUserReceptor(words[0]);
-						cli.getPaqueteMensaje().setMensaje(words[1]);
+						cli.getPaqueteMensaje().setMsj(words[1]);
 
 						if(cli.getChatsActivos().containsKey(cli.getPaqueteMensaje().getUserReceptor())){
 							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getChat()
-							.append(nombreSala + ": "
-									+ cli.getPaqueteMensaje().getMensaje() + "\n");
+							.append(cli.getPaqueteUsuario().getUsername() + ": "
+									+ cli.getPaqueteMensaje().getMsj() + "\n");
 							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
 						}
-						else
+						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
 						{
 							Chat chatPropio = new Chat(cli);
 
@@ -134,8 +131,8 @@ public class Sala extends JFrame  {
 							chatPropio.setVisible(true);
 
 							cli.getChatsActivos().put(cli.getPaqueteMensaje().getUserReceptor(), chatPropio);
-							chatPropio.getChat().append(nombreSala + ": "
-									+ cli.getPaqueteMensaje().getMensaje() + "\n");
+							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
+									+ cli.getPaqueteMensaje().getMsj() + "\n");
 						}
 						synchronized (cli) {
 							cli.notify();
@@ -151,29 +148,146 @@ public class Sala extends JFrame  {
 						texto.setText("");
 						texto.requestFocus();
 					}
+				} else if(!texto.getText().equals("")){
+
+					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+
+					String mensaje;
+					String[] mensajeArray;
+					mensaje = texto.getText();
+					int pos = mensaje.indexOf("@") + 1;
+					mensajeArray = mensaje.substring(pos).split(" ", 2);
+					if (mensajeArray.length > 1 && mensajeArray[1] != null) {
+						mensajeArray[1] = mensajeArray[1].trim();
+					}
+
+
+					cli.setAccion(Comando.MENCIONSALA);
+					cli.getPaqueteMencion().setUserEmisor(cli.getPaqueteUsuario().getUsername());
+					cli.getPaqueteMencion().setUserReceptor(mensajeArray[0]);
+					cli.getPaqueteMencion().setNombreSala(nombreSala);
+					cli.getPaqueteMencion().setMsj(texto.getText());
+
+					texto.setText("");
+					texto.requestFocus();
+					synchronized (cli) {
+						cli.notify();
+					}
+
 				}
 			}
 		});
+
 		texto.setBounds(194, 209, 320, 41);
 		texto.setForeground(Color.WHITE);
 		texto.setBackground(Color.DARK_GRAY);
 		texto.setCaretColor(Color.WHITE);
 		contentPane.add(texto);
 		texto.setColumns(10);
-		
+
 		JButton btnEnviar = new JButton("Enviar");
+		btnEnviar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!texto.getText().equals("") && !texto.getText().startsWith("@") && !texto.getText().contains(" @")) {
+
+					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+
+					cli.setAccion(Comando.CHATSALA);
+					cli.getPaqueteMensajeSala().setUserEmisor(cli.getPaqueteUsuario().getUsername());
+					cli.getPaqueteMensajeSala().setMsj(texto.getText());
+					cli.getPaqueteMensajeSala().setNombreSala(nombreSala);
+
+					texto.setText("");
+					texto.requestFocus();
+					synchronized (cli) {
+						cli.notify();
+					}
+				}
+				else if(!texto.getText().equals("") && texto.getText().startsWith("@")){
+					String[] words;
+					words = texto.getText().substring(1).split(" ", 2);
+					if (words.length > 1 && words[1] != null) {
+						words[1] = words[1].trim();
+					}
+					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=cli.getPaqueteUsuario().getUsername() && words.length > 1 && words[1]!=null){
+						//chat.append(cli.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
+						cli.setAccion(Comando.MP);
+						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername());
+						cli.getPaqueteMensaje().setUserReceptor(words[0]);
+						cli.getPaqueteMensaje().setMsj(words[1]);
+
+						if(cli.getChatsActivos().containsKey(cli.getPaqueteMensaje().getUserReceptor())){
+							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getChat()
+							.append(cli.getPaqueteUsuario().getUsername() + ": "
+									+ cli.getPaqueteMensaje().getMsj() + "\n");
+							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
+						}
+						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
+						{
+							Chat chatPropio = new Chat(cli);
+
+							chatPropio.setTitle(cli.getPaqueteMensaje().getUserReceptor());
+							chatPropio.setVisible(true);
+
+							cli.getChatsActivos().put(cli.getPaqueteMensaje().getUserReceptor(), chatPropio);
+							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
+									+ cli.getPaqueteMensaje().getMsj() + "\n");
+						}
+						synchronized (cli) {
+							cli.notify();
+						}
+						texto.setText("");
+
+						texto.requestFocus();
+					}
+					else
+					{
+						chat.append("No Existe el usuario " + words[0] + "\n");
+
+						texto.setText("");
+						texto.requestFocus();
+					}
+				} else if(!texto.getText().equals("")){
+
+					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
+
+					String mensaje;
+					String[] mensajeArray;
+					mensaje = texto.getText();
+					int pos = mensaje.indexOf("@") + 1;
+					mensajeArray = mensaje.substring(pos).split(" ", 2);
+					if (mensajeArray.length > 1 && mensajeArray[1] != null) {
+						mensajeArray[1] = mensajeArray[1].trim();
+					}
+
+
+					cli.setAccion(Comando.MENCIONSALA);
+					cli.getPaqueteMencion().setUserEmisor(cli.getPaqueteUsuario().getUsername());
+					cli.getPaqueteMencion().setUserReceptor(mensajeArray[0]);
+					cli.getPaqueteMencion().setNombreSala(nombreSala);
+					cli.getPaqueteMencion().setMsj(texto.getText());
+
+					texto.setText("");
+					texto.requestFocus();
+					synchronized (cli) {
+						cli.notify();
+					}
+
+				}
+			}
+		});
 		btnEnviar.setBounds(518, 209, 97, 41);
 		contentPane.add(btnEnviar);
-		
+
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
 		btnDesconectarse.setBounds(10, 209, 170, 41);
 		contentPane.add(btnDesconectarse);
-		
+
 		JLabel lblUsuario = new JLabel("Usuario ");
 		lblUsuario.setBounds(10, 11, 54, 14);
 		contentPane.add(lblUsuario);
-		
-		lblNombreUsuario = new JLabel("");
+
+		lblNombreUsuario = new JLabel(cli.getPaqueteUsuario().getUsername());
 		lblNombreUsuario.setBounds(57, 11, 123, 14);
 		contentPane.add(lblNombreUsuario);
 		setVisible(true);
@@ -182,15 +296,15 @@ public class Sala extends JFrame  {
 	public String getName() {
 		return nombreSala;
 	}
-	
+
 	public void setName(String name) {
 		this.nombreSala = name;
 	}
-	
+
 	public void setNombreUsuario(String nombre){
 		this.lblNombreUsuario.setText(nombre);
 	}
-	
+
 	public JList<String> getListaConectadosSala() {
 		return listaConectadosSala;
 	}
@@ -205,7 +319,7 @@ public class Sala extends JFrame  {
 	public void setChat(JTextArea chat) {
 		this.chat = chat;
 	}
-	
+
 	public JTextField getTexto() {
 		return texto;
 	}
@@ -214,12 +328,4 @@ public class Sala extends JFrame  {
 		this.texto = texto;
 	}
 
-	public ArrayList<String> getUsuariosConectados() {
-		return usuariosConectados;
-	}
-
-	public void setUsuariosConectados(ArrayList<String> usuariosConectados) {
-		this.usuariosConectados = usuariosConectados;
-	}
-	
 }

@@ -76,7 +76,7 @@ public class Chat extends JFrame {
 
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMensaje(texto.getText());
+					cliente.getPaqueteMensaje().setMsj(texto.getText());
 
 					synchronized (cliente) {
 						cliente.notify();
@@ -109,7 +109,7 @@ public class Chat extends JFrame {
 
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMensaje(texto.getText());
+					cliente.getPaqueteMensaje().setMsj(texto.getText());
 
 					synchronized (cliente) {
 						cliente.notify();

@@ -18,6 +18,7 @@ import intefaces.Sala;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteDeUsuariosYSalas;
+import paqueteEnvios.PaqueteMencion;
 import paqueteEnvios.PaqueteMensaje;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensajeSala;
@@ -32,15 +33,16 @@ public class Cliente extends Thread {
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
 	private PaqueteMensajeSala paqueteMensajeSala = new PaqueteMensajeSala();
+	private PaqueteMencion paqueteMencion = new PaqueteMencion();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
 	private Map<String, Sala> salasActivas = new HashMap<>();
 	private VentanaPrincipal chat;
-	
+
 	/*
 	 * 
 	 */
 	private PaqueteSala paqueteSala = new PaqueteSala();
-	
+
 	private int accion; //accion que realiza el usuario
 
 	private final Gson gson = new Gson();
@@ -72,10 +74,10 @@ public class Cliente extends Thread {
 				// Creo el paquete que le voy a enviar al servidor
 				paqueteUsuario = new PaqueteUsuario();
 				new MenuInicio(this).setVisible(true);
-				
+
 				// Espero a que el usuario seleccione alguna accion
 				this.wait();
-				
+
 				while (!paqueteUsuario.isInicioSesion()) {
 
 					switch (getAccion()) {
@@ -86,11 +88,17 @@ public class Cliente extends Thread {
 						salida.writeObject(gson.toJson(paqueteUsuario));
 						break;
 
+					case Comando.MENCIONSALA:
+						paqueteMencion.setComando(Comando.MENCIONSALA);
+						// Le envio el paquete al servidor
+						salida.writeObject(gson.toJson(paqueteMencion));
+						break;
+
 					case Comando.NEWSALA:
 						paqueteSala.setComando(Comando.NEWSALA);
 						salida.writeObject(gson.toJson(paqueteSala));
 						break;
-						
+
 					case Comando.TALK:
 						paqueteMensaje.setComando(Comando.TALK);
 						// Le envio el paquete al servidor
@@ -103,7 +111,7 @@ public class Cliente extends Thread {
 						// Le envio el paquete al servidor
 						salida.writeObject(gson.toJson(paqueteMensajeSala));
 						break;	
-						
+
 					case Comando.CHATALL:
 						paqueteMensaje.setComando(Comando.CHATALL);
 						// Le envio el paquete al servidor
@@ -121,12 +129,12 @@ public class Cliente extends Thread {
 						paqueteMensaje.setComando(Comando.MP);
 						salida.writeObject(gson.toJson(paqueteMensaje));
 						break;
-						
+
 					case Comando.REGISTRO:
 						paqueteUsuario.setComando(Comando.REGISTRO);
 						salida.writeObject(gson.toJson(paqueteUsuario));
 						break;
-						
+
 					case Comando.ENTRARSALA:
 						paqueteSala.setComando(Comando.ENTRARSALA);
 						salida.writeObject(gson.toJson(paqueteSala));
@@ -136,8 +144,8 @@ public class Cliente extends Thread {
 					}
 
 					salida.flush();
-					
-					
+
+
 					if (getAccion() == Comando.DESCONECTAR || getAccion() == Comando.INICIOSESION || getAccion() ==Comando.REGISTRO) {
 						// Recibo el paquete desde el servidor
 						String cadenaLeida = (String) entrada.readObject();
@@ -145,32 +153,32 @@ public class Cliente extends Thread {
 						switch (paquete.getComando()) {
 
 						case Comando.REGISTRO:
-							paqueteUsuario.setMensaje(paquete.getMensaje());
-							if (paquete.getMensaje().equals(Paquete.msjExito)) {
+							paqueteUsuario.setMsj(paquete.getMsj());
+							if (paquete.getMsj().equals(Paquete.msjExito)) {
 
 								JOptionPane.showMessageDialog(null, "Registro exitoso.");
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
-								if (paquete.getMensaje().equals(Paquete.msjFracaso))
+								if (paquete.getMsj().equals(Paquete.msjFracaso))
 									JOptionPane.showMessageDialog(null, "No se pudo registrar.");
-									new MenuInicio(this).setVisible(true);
+								new MenuInicio(this).setVisible(true);
 								// El usuario no pudo iniciar sesi�n
 								paqueteUsuario.setInicioSesion(false);
 							}
 							break;
 
 						case Comando.INICIOSESION:
-							paqueteUsuario.setMensaje(paquete.getMensaje());
+							paqueteUsuario.setMsj(paquete.getMsj());
 							ArrayList<String> salas = (ArrayList<String>) gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class)
 									.getSalas();
 							paqueteUsuario.setListaDeSalas(salas);
-							if (paquete.getMensaje().equals(Paquete.msjExito)) {
-						
+							if (paquete.getMsj().equals(Paquete.msjExito)) {
+
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
-								if (paquete.getMensaje().equals(Paquete.msjFracaso))
+								if (paquete.getMsj().equals(Paquete.msjFracaso))
 									JOptionPane.showMessageDialog(null,
 											"Error al iniciar sesión. Revise el usuario y la contraseña");
 
@@ -191,19 +199,19 @@ public class Cliente extends Thread {
 						}
 					}
 					this.wait();
-					
+
 				}
 
 				paqueteUsuario.setIp(miIp);
-				
+
 			} catch (IOException | InterruptedException | ClassNotFoundException  e) {
 				JOptionPane.showMessageDialog(null, "Fallo la conexión del Cliente.");
 				e.printStackTrace();
 				System.exit(1);
 			} 
 		}
-		
-		
+
+
 	}
 
 	public void setAccion(int accion) {
@@ -255,7 +263,7 @@ public class Cliente extends Thread {
 	}
 
 	public void setPaqueteMensaje(PaqueteMensaje fromJson) {
-		this.paqueteMensaje.setMensaje(fromJson.getMensaje());
+		this.paqueteMensaje.setMsj(fromJson.getMsj());
 		this.paqueteMensaje.setUserEmisor(fromJson.getUserEmisor());
 		this.paqueteMensaje.setUserReceptor(fromJson.getUserReceptor());
 	}
@@ -263,7 +271,7 @@ public class Cliente extends Thread {
 	public Map<String, Chat> getChatsActivos() {
 		return chatsActivos;
 	}
-	
+
 	public Map<String, Sala> getSalasActivas() {
 		return salasActivas;
 	}
@@ -285,9 +293,19 @@ public class Cliente extends Thread {
 	}
 
 	public void setPaqueteMensajeSala(PaqueteMensajeSala paqueteMensajeSala) {
-		this.paqueteMensajeSala.setMensaje(paqueteMensajeSala.getMensaje());
+		this.paqueteMensajeSala.setMsj(paqueteMensajeSala.getMsj());
 		this.paqueteMensajeSala.setUserEmisor(paqueteMensajeSala.getUserEmisor());
-		this.paqueteMensajeSala.setUsersDestino(paqueteMensajeSala.getUsersDestino());
+	}
+
+	public PaqueteMencion getPaqueteMencion() {
+		return paqueteMencion;
+	}
+
+	public void setPaqueteMencion(PaqueteMencion paqueteMencion) {
+		this.paqueteMencion.setNombreSala(paqueteMencion.getNombreSala());
+		this.paqueteMencion.setUserEmisor(paqueteMencion.getUserEmisor());
+		this.paqueteMencion.setUserReceptor(paqueteMencion.getUserReceptor());
+		this.paqueteMencion.setMsj(paqueteMencion.getMsj());
 	}
 
 }

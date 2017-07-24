@@ -11,11 +11,11 @@ public class PaqueteMensaje extends Paquete implements Serializable, Cloneable {
 	public PaqueteMensaje() {
 	}
 
-	public String getMensaje() {
+	public String getMsj() {
 		return msj;
 	}
 
-	public void setMensaje(String mensaje) {
+	public void setMsj(String mensaje) {
 		this.msj = mensaje;
 	}
 

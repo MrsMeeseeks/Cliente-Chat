@@ -26,7 +26,7 @@ import javax.swing.JLayeredPane;
 public class MenuInicioSesion extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField txtUser;
 	private JPasswordField passwordField;
 
 	public MenuInicioSesion(final Cliente cliente) {
@@ -58,30 +58,30 @@ public class MenuInicioSesion extends JFrame {
 		layeredPane.setBounds(0, 0, 444, 271);
 		contentPane.add(layeredPane);
 
-		JLabel lblNewLabel_1 = new JLabel("Password");
-		lblNewLabel_1.setBounds(111, 118, 68, 21);
-		layeredPane.add(lblNewLabel_1);
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblNewLabel_1.setForeground(Color.BLACK);
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setBounds(111, 118, 68, 21);
+		layeredPane.add(lblPassword);
+		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblPassword.setForeground(Color.BLACK);
 
-		JLabel lblNewLabel = new JLabel("Usuario");
-		lblNewLabel.setBounds(111, 66, 55, 23);
-		layeredPane.add(lblNewLabel, new Integer(2));
-		lblNewLabel.setForeground(Color.BLACK);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblUser = new JLabel("Usuario");
+		lblUser.setBounds(111, 66, 55, 23);
+		layeredPane.add(lblUser, new Integer(2));
+		lblUser.setForeground(Color.BLACK);
+		lblUser.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		textField = new JTextField();
-		textField.setBounds(198, 69, 118, 20);
-		layeredPane.add(textField, new Integer(1));
-		textField.setColumns(10);
+		txtUser = new JTextField();
+		txtUser.setBounds(198, 69, 118, 20);
+		layeredPane.add(txtUser, new Integer(1));
+		txtUser.setColumns(10);
 
 		passwordField = new JPasswordField();
 		passwordField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!textField.getText().equals("") && !passwordField.getText().equals("")){
+				if(!txtUser.getText().equals("") && !passwordField.getText().equals("")){
 					synchronized(cliente){
 						cliente.setAccion(Comando.INICIOSESION);
-						cliente.getPaqueteUsuario().setUsername(textField.getText());
+						cliente.getPaqueteUsuario().setUsername(txtUser.getText());
 						cliente.getPaqueteUsuario().setPassword(passwordField.getText());
 						cliente.notify();
 						dispose();
@@ -100,10 +100,10 @@ public class MenuInicioSesion extends JFrame {
 		btnConectar.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				if(!textField.getText().equals("") && !passwordField.getText().equals("")){
+				if(!txtUser.getText().equals("") && !passwordField.getText().equals("")){
 					synchronized(cliente){
 						cliente.setAccion(Comando.INICIOSESION);
-						cliente.getPaqueteUsuario().setUsername(textField.getText());
+						cliente.getPaqueteUsuario().setUsername(txtUser.getText());
 						cliente.getPaqueteUsuario().setPassword(passwordField.getText());
 						cliente.notify();
 						dispose();

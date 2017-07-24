@@ -6,18 +6,17 @@ import java.util.ArrayList;
 public class PaqueteMensajeSala extends Paquete implements Serializable, Cloneable {
 
 	private String userEmisor;
-	private ArrayList<String> usersDestino;
 	private String msj;
 	private String NombreSala;
 
 	public PaqueteMensajeSala() {
 	}
 
-	public String getMensaje() {
+	public String getMsj() {
 		return msj;
 	}
 
-	public void setMensaje(String mensaje) {
+	public void setMsj(String mensaje) {
 		this.msj = mensaje;
 	}
 
@@ -34,14 +33,6 @@ public class PaqueteMensajeSala extends Paquete implements Serializable, Cloneab
 		Object obj = null;
 		obj = super.clone();
 		return obj;
-	}
-
-	public ArrayList<String> getUsersDestino() {
-		return usersDestino;
-	}
-
-	public void setUsersDestino(ArrayList<String> usersDestino) {
-		this.usersDestino = usersDestino;
 	}
 
 	public String getNombreSala() {
