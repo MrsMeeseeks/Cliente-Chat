@@ -45,18 +45,26 @@ public class Sala extends JFrame  {
 
 	public Sala(Cliente cli) {
 		
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent arg0) {
-				dispose();
-			}
-		});
-		
 		this.nombreSala = cli.getPaqueteSala().getNombreSala();
 		this.ownerSala = cli.getPaqueteSala().getOwnerSala();
 		setTitle(nombreSala);
 		setResizable(false);
 		setBounds(100, 100, 646, 300);
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				if (abrirVentanaConfirmaSalir()) {
+					synchronized (cli) {
+						cli.getPaqueteSala().setNombreSala(nombreSala);
+						cli.getPaqueteSala().setCliente(cli.getPaqueteUsuario().getUsername());
+						cli.setAccion(Comando.DESCONECTARDESALA);
+						cli.notify();
+					}
+					dispose();
+				}
+			}
+		});
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setBackground(Color.GRAY);
@@ -126,7 +134,6 @@ public class Sala extends JFrame  {
 						words[1] = words[1].trim();
 					}
 					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=cli.getPaqueteUsuario().getUsername() && words.length > 1 && words[1]!=null){
-						//chat.append(cli.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
 						cli.setAccion(Comando.MP);
 						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername());
 						cli.getPaqueteMensaje().setUserReceptor(words[0]);
@@ -297,16 +304,14 @@ public class Sala extends JFrame  {
 		JButton btnDesconectarse = new JButton("Salir de la Sala");
 		btnDesconectarse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
 				if (abrirVentanaConfirmaSalir()) {
-					if (cli != null) {
 						synchronized (cli) {
-							cli.setAccion(Comando.DESCONECTAR);
+							cli.getPaqueteSala().setCliente(cli.getPaqueteUsuario().getUsername());
+							cli.getPaqueteSala().setNombreSala(nombreSala);
+							cli.setAccion(Comando.DESCONECTARDESALA);
 							cli.notify();
 						}
-						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					}
-					System.exit(0);
+						dispose();	
 				}
 			}
 		});
@@ -359,7 +364,7 @@ public class Sala extends JFrame  {
 	}
 
 	private boolean abrirVentanaConfirmaSalir() {
-		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea salir del Chat?", "Confirmación",
+		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea salir de la sala?", "Confirmación",
 				JOptionPane.YES_NO_OPTION);
 		if (opcion == JOptionPane.YES_OPTION) {
 			return true;

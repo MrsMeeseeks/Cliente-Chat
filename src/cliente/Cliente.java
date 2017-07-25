@@ -141,6 +141,11 @@ public class Cliente extends Thread {
 						paqueteSala.setComando(Comando.ENTRARSALA);
 						salida.writeObject(gson.toJson(paqueteSala));
 						break;
+						
+					case Comando.DESCONECTARDESALA:
+						paqueteSala.setComando(Comando.DESCONECTARDESALA);
+						salida.writeObject(gson.toJson(paqueteSala));
+						break;
 					default:
 						break;
 					}

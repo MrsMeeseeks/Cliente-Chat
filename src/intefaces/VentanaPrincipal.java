@@ -72,9 +72,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 		cliente = cli;
 		user = cliente.getPaqueteUsuario().getUsername();
-
+		setTitle("Ventana Principal");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 673, 537);
 		setLocationRelativeTo(null);
 
@@ -82,13 +81,11 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				if (abrirVentanaConfirmaSalir()) {
-					if (cliente != null) {
-						synchronized (cliente) {
-							cliente.setAccion(Comando.DESCONECTAR);
-							cliente.notify();
-						}
-						setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					synchronized (cliente) {
+						cliente.setAccion(Comando.DESCONECTAR);
+						cliente.notify();
 					}
+					dispose();
 					System.exit(0);
 				}
 			}
@@ -305,7 +302,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 
 
 
-		labelNombreUsuario = new JLabel("");
+		labelNombreUsuario = new JLabel(user);
 		labelNombreUsuario.setForeground(Color.BLACK);
 		labelNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		labelNombreUsuario.setBounds(86, 11, 103, 16);
@@ -421,8 +418,6 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		}
 
 		if (cliente.getPaqueteUsuario().getMsj().equals(Paquete.msjExito)) {
-			setTitle("Usuario: " + user);
-			labelNombreUsuario.setText(user);
 			refreshListSalas(cliente);
 			enviarATodos.setEnabled(true);
 			texto.setEditable(true);

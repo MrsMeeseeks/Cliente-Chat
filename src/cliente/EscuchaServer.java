@@ -207,7 +207,7 @@ public class EscuchaServer extends Thread {
 					if (cliente.getPaqueteSala().getMsj().equals(Paquete.msjExito)) {
 						if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getNombreSala()))) {
 							sala = new Sala(cliente);
-							sala.getChat().setText(cliente.getPaqueteSala().getTexto());
+							sala.getChat().setText(cliente.getPaqueteSala().getHistorial());
 							cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
 						} else {
 							JOptionPane.showMessageDialog(null, "Ya se encuentra conectado a esta sala");
@@ -219,9 +219,12 @@ public class EscuchaServer extends Thread {
 
 				case Comando.CONEXIONSALA:
 					PaqueteSala paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
-					//cliente.setPaqueteSala(paqueteSala);
 					actualizarListaConectadosSala(paqueteSala);
 					break;
+					
+				case Comando.DESCONECTARDESALA:
+					paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
+					cliente.getSalasActivas().remove(paqueteSala.getNombreSala());
 				}
 
 				synchronized (entrada) {
