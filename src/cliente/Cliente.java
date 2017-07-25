@@ -180,12 +180,10 @@ public class Cliente extends Thread {
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
-								if (paquete.getMsj().equals(Paquete.msjFracaso))
-									JOptionPane.showMessageDialog(null,
+								JOptionPane.showMessageDialog(null,
 											"Error al iniciar sesión. Revise el usuario y la contraseña");
-
+								this.paqueteUsuario.setUsername(null);
 								new MenuInicio(this).setVisible(true);
-								paqueteUsuario.setInicioSesion(false);
 							}
 							break;
 
