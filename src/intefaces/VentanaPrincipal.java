@@ -148,12 +148,12 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 				if (arg0.getClickCount() == 2) {
 					if (listaSalas.getSelectedValue() != null) {
 						if (!cliente.getSalasActivas().containsKey(listaSalas.getSelectedValue())) {
-								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
-								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
-								synchronized (cliente) {
-									cliente.setAccion(Comando.ENTRARSALA);
-									cliente.notify();
-								}
+							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
+							cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
+							synchronized (cliente) {
+								cliente.setAccion(Comando.ENTRARSALA);
+								cliente.notify();
+							}
 						} else {
 							JOptionPane.showMessageDialog(null, "Ya se encuentra en esta sala.");
 						}
@@ -162,7 +162,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			}
 		});
 		listaSalas.setModel(modeloSalas);
-		
+
 		//comentario para poder commitear
 
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -338,16 +338,17 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			public void actionPerformed(ActionEvent e) {
 				if(listaSalas.getSelectedValue()!=null) {
 					if (abrirVentanaConfirmaEliminarSalaChat()) {
-							synchronized (cliente) {
-								cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
-								cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
-								cliente.setAccion(Comando.ELIMINARSALA);
-								cliente.notify();
-							}
+						synchronized (cliente) {
+							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
+							cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
+							cliente.setAccion(Comando.ELIMINARSALA);
+							cliente.notify();
+						}
 					} 
 				} else {
 					JOptionPane.showMessageDialog(null, "Primero seleccione la sala que quiere eliminar.");
 				}
+
 			}
 		});
 		btnNewButton.setBounds(18, 473, 171, 16);

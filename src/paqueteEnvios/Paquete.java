@@ -6,6 +6,7 @@ public class Paquete implements Serializable, Cloneable {
 
 	public static String msjExito = "1";
 	public static String msjFracaso = "0";
+	public static String msjFallo = "2";
 
 	private String mensaje;
 	private String ip;

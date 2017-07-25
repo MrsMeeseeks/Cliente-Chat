@@ -2,6 +2,7 @@ package intefaces;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -33,6 +34,8 @@ public class Sala extends JFrame  {
 	private JPanel contentPane;
 	private JTextField texto;
 
+	private String ownerSala;
+
 	private JLabel lblNombreUsuario;
 	private JTextArea chat;
 
@@ -41,13 +44,16 @@ public class Sala extends JFrame  {
 	private static JList<String> listaConectadosSala = new JList<String>();
 
 	public Sala(Cliente cli) {
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent arg0) {
 				dispose();
 			}
 		});
+		
 		this.nombreSala = cli.getPaqueteSala().getNombreSala();
+		this.ownerSala = cli.getPaqueteSala().getOwnerSala();
 		setTitle(nombreSala);
 		setResizable(false);
 		setBounds(100, 100, 646, 300);
@@ -360,5 +366,14 @@ public class Sala extends JFrame  {
 		}
 		return false;
 	}
+
+	public String getOwnerSala() {
+		return ownerSala;
+	}
+
+	public void setOwnerSala(String ownerSala) {
+		this.ownerSala = ownerSala;
+	}
+
 	
 }

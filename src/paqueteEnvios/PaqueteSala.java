@@ -10,6 +10,7 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	private String nombreSala;
 	private String historial = "";
 	private String texto;
+	private String ownerSala;
 
 	private ArrayList<String> UsuariosConectados = new ArrayList<String>();
 	private String cliente;
@@ -19,6 +20,12 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	public PaqueteSala(String name, String chat){
 		this.nombreSala = name;
 		this.historial = chat;
+	}
+	
+	public PaqueteSala(String name, String chat, String owner){
+		this.nombreSala = name;
+		this.historial = chat;
+		this.ownerSala = owner;
 	}
 	
 	public PaqueteSala() {
@@ -70,6 +77,14 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 
 	public void setTexto(String texto) {
 		this.texto = texto;
+	}
+
+	public String getOwnerSala() {
+		return ownerSala;
+	}
+
+	public void setOwnerSala(String ownerSala) {
+		this.ownerSala = ownerSala;
 	}
 
 }

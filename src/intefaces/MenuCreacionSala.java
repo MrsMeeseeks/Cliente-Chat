@@ -11,6 +11,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -46,6 +48,7 @@ public class MenuCreacionSala extends JFrame {
 					name = textFieldSala.getText();
 					//Sala sala = new Sala(name);
 					cliente.getPaqueteSala().setNombreSala(name);
+					cliente.getPaqueteSala().setOwnerSala(cliente.getPaqueteUsuario().getUsername());
 					cliente.setAccion(Comando.NEWSALA);
 					synchronized (cliente) {
 						cliente.notify();
@@ -55,6 +58,7 @@ public class MenuCreacionSala extends JFrame {
 			}
 		});
 		btnCrearSala.setBounds(10, 86, 154, 46);
+		//this.getRootPane().setDefaultButton(btnCrearSala);
 		contentPane.add(btnCrearSala);
 		
 		JButton btnSalir = new JButton("Salir");
@@ -67,7 +71,7 @@ public class MenuCreacionSala extends JFrame {
 		contentPane.add(btnSalir);
 		
 		JLabel lblNombreSala = new JLabel("Nombre de la Sala");
-		//lblNombreSala.setHorizontalAlignment();
+		lblNombreSala.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNombreSala.setBounds(10, 11, 154, 37);
 		contentPane.add(lblNombreSala);
 		
@@ -77,8 +81,10 @@ public class MenuCreacionSala extends JFrame {
 				if(!textFieldSala.getText().equals("")){
 					name = textFieldSala.getText();
 					cliente.getPaqueteSala().setNombreSala(name);
-					cliente.getPaqueteUsuario().setComando(Comando.NEWSALA);
-					cliente.notify();
+					cliente.setAccion(Comando.NEWSALA);
+					synchronized (cliente) {
+						cliente.notify();
+					}
 					dispose();
 				}
 			}
@@ -86,5 +92,6 @@ public class MenuCreacionSala extends JFrame {
 		textFieldSala.setBounds(10, 45, 154, 30);
 		contentPane.add(textFieldSala);
 		textFieldSala.setColumns(10);
+		
 	}
 }

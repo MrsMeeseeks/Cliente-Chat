@@ -184,16 +184,20 @@ public class EscuchaServer extends Thread {
 				case Comando.ELIMINARSALA:
 					if(paquete.getMsj().equals(Paquete.msjExito)) {
 						PaqueteSala paqueteSala = (PaqueteSala) gson.fromJson(objetoLeido, PaqueteSala.class);
-						if(cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala())) {
+						if(cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala()) 
+								|| cliente.getPaqueteUsuario().getUsername().equals(paqueteSala.getCliente())) {
 							JOptionPane.showMessageDialog(null, "La sala " + paqueteSala.getNombreSala() + " ha sido eliminada.");
-							cliente.getSalasActivas().get(paqueteSala.getNombreSala()).dispose();
+							if(cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala()))
+								cliente.getSalasActivas().get(paqueteSala.getNombreSala()).dispose();
 							cliente.getSalasActivas().remove(paqueteSala.getNombreSala());
 						}
 						cliente.getPaqueteUsuario().getListaDeSalas().remove(paqueteSala.getNombreSala());
 						actualizarListaSalas(cliente);
 						break;
-					} else {
+					} else if(paquete.getMsj().equals(Paquete.msjFracaso)) {
 						JOptionPane.showMessageDialog(null, "Error al tratar de eliminar la sala.");
+					} else if(paquete.getMsj().equals(Paquete.msjFallo)){
+						JOptionPane.showMessageDialog(null, "La sala solo puede ser eliminada por el user que la creo ");
 					}
 					break;
 
