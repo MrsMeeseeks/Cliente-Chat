@@ -219,7 +219,10 @@ public class EscuchaServer extends Thread {
 
 				case Comando.CONEXIONSALA:
 					PaqueteSala paqueteSala = gson.fromJson(objetoLeido, PaqueteSala.class);
-					actualizarListaConectadosSala(paqueteSala);
+					if(cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala())) {
+						actualizarListaConectadosSala(paqueteSala);
+					}
+					
 					break;
 					
 				case Comando.DESCONECTARDESALA:
