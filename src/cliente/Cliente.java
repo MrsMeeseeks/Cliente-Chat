@@ -164,6 +164,10 @@ public class Cliente extends Thread {
 							if (paquete.getMsj().equals(Paquete.msjExito)) {
 
 								JOptionPane.showMessageDialog(null, "Registro exitoso.");
+								paqueteUsuario.setMsj(paquete.getMsj());
+								ArrayList<String> salas = (ArrayList<String>) gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class)
+										.getSalas();
+								paqueteUsuario.setListaDeSalas(salas);
 								chat = new VentanaPrincipal(this);
 								chat.run();
 							} else {
