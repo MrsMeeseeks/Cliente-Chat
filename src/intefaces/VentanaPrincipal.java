@@ -76,6 +76,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		setResizable(false);
 		setBounds(100, 100, 673, 537);
 		setLocationRelativeTo(null);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		addWindowListener(new WindowAdapter() {
 			@Override

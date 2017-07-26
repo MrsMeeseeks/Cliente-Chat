@@ -41,7 +41,7 @@ public class Sala extends JFrame  {
 
 	private String nombreSala;
 
-	private static JList<String> listaConectadosSala = new JList<String>();
+	private JList<String> listaConectadosSala = new JList<String>();
 
 	public Sala(Cliente cli) {
 		
@@ -50,6 +50,7 @@ public class Sala extends JFrame  {
 		setTitle(nombreSala);
 		setResizable(false);
 		setBounds(100, 100, 646, 300);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -343,8 +344,8 @@ public class Sala extends JFrame  {
 	public JList<String> getListaConectadosSala() {
 		return listaConectadosSala;
 	}
-	public static void setListaConectadosSala(JList<String> listaConectadosSala) {
-		Sala.listaConectadosSala = listaConectadosSala;
+	public  void setListaConectadosSala(JList<String> listaConectadosSala) {
+		this.listaConectadosSala = listaConectadosSala;
 	}
 
 	public JTextArea getChat() {
