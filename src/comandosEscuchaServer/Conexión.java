@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import paqueteEnvios.PaqueteDeUsuariosYSalas;
 
-public class Conexión extends ComandoCliente {
+public class Conexión extends ComandoEscuchaServer {
 	
 	@Override
 	public void ejecutar() {

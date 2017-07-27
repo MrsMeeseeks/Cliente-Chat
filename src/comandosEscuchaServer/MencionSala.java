@@ -7,7 +7,7 @@ import cliente.Cliente;
 import intefaces.Notificacion;
 import paqueteEnvios.PaqueteMencion;
 
-public class MencionSala extends ComandoCliente {
+public class MencionSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {

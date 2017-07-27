@@ -37,7 +37,7 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.JTextArea;
 
-public class VentanaPrincipal extends JFrame implements Runnable {
+public class VentanaPrincipal extends JFrame {
 	/**
 	 * 
 	 */
@@ -166,7 +166,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		contentPane.add(scrollPane_1);
 
 		chat = new JTextArea();
-		chat.setEnabled(false);
+		chat.setEnabled(true);
 		chat.setEditable(false);
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
@@ -239,7 +239,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 			}
 		});
 
-		texto.setEditable(false);
+		texto.setEditable(true);
 		texto.setForeground(Color.WHITE);
 		texto.setBackground(Color.DARK_GRAY);
 		texto.setCaretColor(Color.WHITE);
@@ -248,7 +248,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		texto.setColumns(10);
 
 		enviarATodos = new JButton("Enviar a Todos");
-		enviarATodos.setEnabled(false);
+		enviarATodos.setEnabled(true);
 		enviarATodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
@@ -351,6 +351,7 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		});
 		btnNewButton.setBounds(18, 473, 171, 16);
 		contentPane.add(btnNewButton);
+		setVisible(true);
 	}
 
 	private boolean abrirVentanaConfirmaSalir() {
@@ -400,63 +401,13 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		return enviarATodos;
 	}
 
-	@Override
-	public void run() {
-		setVisible(true);
 
-		while (cliente.getState() == Thread.State.WAITING) {
-		}
 
-		EscuchaServer em = new EscuchaServer(cliente);
-		em.start();
-
-		synchronized (this) {
-			try {
-				this.wait(200);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-		}
-
-		if (cliente.getPaqueteUsuario().getMsj().equals(Paquete.msjExito)) {
-			refreshListSalas(cliente);
-			enviarATodos.setEnabled(true);
-			texto.setEditable(true);
-			chat.setEnabled(true);
-		} else {
-			try {
-				cliente.getSalida().close();
-				cliente.getEntrada().close();
-				cliente.getSocket().close();
-				cliente.stop();
-				user = null;
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
-	private void refreshListSalas(Cliente cliente) {
-		if (cliente != null) {
-			synchronized (cliente) {
-				modeloSalas.removeAllElements();
-				if (cliente.getPaqueteUsuario().getListaDeSalas() != null) {
-					for (String cad : cliente.getPaqueteUsuario().getListaDeSalas()) {
-						modeloSalas.addElement(cad);
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	 * 
-	 */
 	public ArrayList<Sala> getSalasDisponibles() {
 		return salasDisponibles;
 	}
-	/*
-	 * 
-	 */
+	
+	
 	public void setSalasDisponibles(ArrayList<Sala> salasDisponibles) {
 		this.salasDisponibles = salasDisponibles;
 	}

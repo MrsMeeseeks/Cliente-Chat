@@ -8,7 +8,7 @@ import cliente.Cliente;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteDeSalas;
 
-public class NewSala extends ComandoCliente {
+public class NewSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {

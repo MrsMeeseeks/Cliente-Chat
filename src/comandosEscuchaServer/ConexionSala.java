@@ -3,7 +3,7 @@ package comandosEscuchaServer;
 import cliente.Cliente;
 import paqueteEnvios.PaqueteSala;
 
-public class ConexionSala extends ComandoCliente {
+public class ConexionSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {

@@ -6,7 +6,7 @@ import cliente.Cliente;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteSala;
 
-public class EliminarSala extends ComandoCliente {
+public class EliminarSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {

@@ -10,8 +10,7 @@ import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 
-import comandosEscuchaServer.ComandoCliente;
-
+import comandosEscuchaServer.ComandoEscuchaServer;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.Comando;
 import paqueteEnvios.Paquete;
@@ -37,13 +36,13 @@ public class EscuchaServer extends Thread {
 	public void run() {
 		try {
 			
-			ComandoCliente comando;
+			ComandoEscuchaServer comando;
 			Paquete paquete;
 			
 			String cadenaLeida = (String) entrada.readObject();
 			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)) {
 
-				comando = (ComandoCliente) paquete.getObjeto("comandosEscuchaServer");
+				comando = (ComandoEscuchaServer) paquete.getObjeto("comandosEscuchaServer");
 				comando.setCadena(cadenaLeida);
 				comando.setEscuchaServer(this);
 				comando.ejecutar();
@@ -52,6 +51,10 @@ public class EscuchaServer extends Thread {
 					cadenaLeida = (String) entrada.readObject();
 				}
 			}
+			
+			
+			
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fallo la conexión con el servidor.");
 			e.printStackTrace();

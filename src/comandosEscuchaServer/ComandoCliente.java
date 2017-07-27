@@ -1,13 +1,12 @@
 package comandosEscuchaServer;
 
-import cliente.EscuchaServer;
+import cliente.Cliente;
 import paqueteEnvios.Comando;
 
-
 public abstract class ComandoCliente extends Comando{
-	protected EscuchaServer escuchaServer;
+	protected Cliente cliente;
 
-	public void setEscuchaServer(EscuchaServer escuchaServer) {
-		this.escuchaServer = escuchaServer;
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 }

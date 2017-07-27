@@ -75,14 +75,5 @@ public class Paquete implements Serializable, Cloneable {
 		return c;
 
 	}
-//	public static Comando getObjetoSet(String nombrePaquete, int accion) {
-//		try {
-//			Comando c;
-//			c = (Comando) Class.forName(nombrePaquete + "." + Comando.CLASSNAMESBIS[accion]).newInstance();
-//			return c;
-//		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-//			return null;
-//		}
-
 
 }

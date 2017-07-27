@@ -7,7 +7,7 @@ import intefaces.Sala;
 import paqueteEnvios.Paquete;
 import paqueteEnvios.PaqueteSala;
 
-public class EntrarSala extends ComandoCliente {
+public class EntrarSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {

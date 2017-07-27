@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 
+import comandosEscuchaServer.ComandoCliente;
 import intefaces.Chat;
 import intefaces.MenuInicio;
 import intefaces.Sala;
@@ -42,7 +43,7 @@ public class Cliente extends Thread {
 
 	private PaqueteSala paqueteSala = new PaqueteSala();
 
-	private int accion; //accion que realiza el usuario
+	private int accion; 
 
 	private final Gson gson = new Gson();
 
@@ -70,145 +71,29 @@ public class Cliente extends Thread {
 	public void run() {
 		synchronized (this) {
 			try {
-				// Creo el paquete que le voy a enviar al servidor
-				paqueteUsuario = new PaqueteUsuario();
 				new MenuInicio(this).setVisible(true);
 
-				// Espero a que el usuario seleccione alguna accion
 				this.wait();
 
-				while (!paqueteUsuario.isInicioSesion()) {
-
-					switch (getAccion()) {
-
-					case Comando.INICIOSESION:
-						paqueteUsuario.setComando(Comando.INICIOSESION);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteUsuario));
-						break;
-
-					case Comando.MENCIONSALA:
-						paqueteMencion.setComando(Comando.MENCIONSALA);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteMencion));
-						break;
-
-					case Comando.NEWSALA:
-						paqueteSala.setComando(Comando.NEWSALA);
-						salida.writeObject(gson.toJson(paqueteSala));
-						break;
-
-					case Comando.ELIMINARSALA:
-						paqueteSala.setComando(Comando.ELIMINARSALA);
-						salida.writeObject(gson.toJson(paqueteSala));
-						break;
-						
-					case Comando.CHATSALA:
-						paqueteMensajeSala.setComando(Comando.CHATSALA);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteMensajeSala));
-						break;	
-
-					case Comando.CHATALL:
-						paqueteMensaje.setComando(Comando.CHATALL);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteMensaje));
-						break;
-
-					case Comando.DESCONECTAR:
-						paqueteUsuario.setIp(getMiIp());
-						paqueteUsuario.setComando(Comando.DESCONECTAR);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteUsuario));
-						break;
-
-					case Comando.MP:
-						paqueteMensaje.setComando(Comando.MP);
-						salida.writeObject(gson.toJson(paqueteMensaje));
-						break;
-
-					case Comando.REGISTRO:
-						paqueteUsuario.setComando(Comando.REGISTRO);
-						salida.writeObject(gson.toJson(paqueteUsuario));
-						break;
-
-					case Comando.ENTRARSALA:
-						paqueteSala.setComando(Comando.ENTRARSALA);
-						salida.writeObject(gson.toJson(paqueteSala));
-						break;
-						
-					case Comando.DESCONECTARDESALA:
-						paqueteSala.setComando(Comando.DESCONECTARDESALA);
-						salida.writeObject(gson.toJson(paqueteSala));
-						break;
-					default:
-						break;
-					}
+				ComandoCliente comando;
+				Paquete paquete = new Paquete();
+				
+				EscuchaServer es = new EscuchaServer(this);
+				es.start();
+				
+				while (true) {
+					paquete.setComando(accion);
+					comando = (ComandoCliente) paquete.getObjeto("comandosCliente");
+					comando.setCliente(this);
+					comando.ejecutar();
 
 					salida.flush();
-
-
-					if (getAccion() == Comando.DESCONECTAR || getAccion() == Comando.INICIOSESION || getAccion() ==Comando.REGISTRO) {
-						// Recibo el paquete desde el servidor
-						String cadenaLeida = (String) entrada.readObject();
-						Paquete paquete = gson.fromJson(cadenaLeida, Paquete.class);
-						switch (paquete.getComando()) {
-
-						case Comando.REGISTRO:
-							paqueteUsuario.setMsj(paquete.getMsj());
-							if (paquete.getMsj().equals(Paquete.msjExito)) {
-
-								JOptionPane.showMessageDialog(null, "Registro exitoso.");
-								paqueteUsuario.setMsj(paquete.getMsj());
-								ArrayList<String> salas = (ArrayList<String>) gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class)
-										.getSalas();
-								paqueteUsuario.setListaDeSalas(salas);
-								chat = new VentanaPrincipal(this);
-								chat.run();
-							} else {
-								if (paquete.getMsj().equals(Paquete.msjFracaso))
-									JOptionPane.showMessageDialog(null, "No se pudo registrar.");
-								new MenuInicio(this).setVisible(true);
-								// El usuario no pudo iniciar sesi�n
-								paqueteUsuario.setInicioSesion(false);
-							}
-							break;
-
-						case Comando.INICIOSESION:
-							paqueteUsuario.setMsj(paquete.getMsj());
-							ArrayList<String> salas = (ArrayList<String>) gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class)
-									.getSalas();
-							paqueteUsuario.setListaDeSalas(salas);
-							if (paquete.getMsj().equals(Paquete.msjExito)) {
-
-								chat = new VentanaPrincipal(this);
-								chat.run();
-							} else {
-								JOptionPane.showMessageDialog(null,
-											"Error al iniciar sesión. Revise el usuario y la contraseña");
-								this.paqueteUsuario.setUsername(null);
-								new MenuInicio(this).setVisible(true);
-							}
-							break;
-
-						case Comando.DESCONECTAR:
-							// El usuario no pudo iniciar sesi�n
-							paqueteUsuario.setInicioSesion(false);
-							salida.writeObject(gson.toJson(new Paquete(Comando.DESCONECTAR), Paquete.class));
-							cliente.close();
-							break;
-
-						default:
-							break;
-						}
-					}
+					
 					this.wait();
 
 				}
 
-				paqueteUsuario.setIp(miIp);
-
-			} catch (IOException | InterruptedException | ClassNotFoundException  e) {
+			} catch (IOException | InterruptedException  e) {
 				JOptionPane.showMessageDialog(null, "Fallo la conexión del Cliente.");
 				e.printStackTrace();
 				System.exit(1);

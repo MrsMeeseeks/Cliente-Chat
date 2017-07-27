@@ -4,7 +4,7 @@ import cliente.Cliente;
 import intefaces.VentanaPrincipal;
 import paqueteEnvios.PaqueteMensaje;
 
-public class ChatAll extends ComandoCliente {
+public class ChatAll extends ComandoEscuchaServer{
 
 	@Override
 	public void ejecutar() {
