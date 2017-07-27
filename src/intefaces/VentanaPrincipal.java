@@ -1,15 +1,13 @@
 package intefaces;
 
 import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,32 +21,25 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+
 import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
-import cliente.EscuchaServer;
 import paqueteEnvios.Comando;
-import paqueteEnvios.Paquete;
+import paqueteEnvios.PaqueteMensaje;
 import paqueteEnvios.PaqueteUsuario;
 
-import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.JTextArea;
 
 public class VentanaPrincipal extends JFrame {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private String user = null;
 	private Cliente cliente;
 	private PaqueteUsuario paqueteUsuario;
 	private static int cantUsuariosCon;
-	/*
-	 * 
-	 */
+	
 	private ArrayList<Sala> salasDisponibles = new ArrayList<>();
 	private Map<String,Sala> mapaSalas = new HashMap<>();
 
@@ -87,7 +78,6 @@ public class VentanaPrincipal extends JFrame {
 						cliente.notify();
 					}
 					dispose();
-					System.exit(0);
 				}
 			}
 		});
@@ -179,12 +169,11 @@ public class VentanaPrincipal extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
 
-					chat.append(user + ": " + texto.getText() + "\n");
+					chat.append(user + " : " + texto.getText() + "\n");
 
 					cliente.setAccion(Comando.CHATALL);
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMsj(texto.getText());
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),null,texto.getText(),null);
+					cliente.setPaqueteMensaje(paqueteMsj);
 					texto.setText("");
 					texto.requestFocus();
 					synchronized (cliente) {
@@ -198,28 +187,24 @@ public class VentanaPrincipal extends JFrame {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						//chat.append(user + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
-						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername() );
-						cliente.getPaqueteMensaje().setUserReceptor(words[0]);
-						cliente.getPaqueteMensaje().setMsj(words[1]);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
+						cliente.setPaqueteMensaje(paqueteMsj);
 
-						if(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserReceptor())){
-							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getChat()
+						if(cliente.getChatsActivos().containsKey(words[0])){
+							cliente.getChatsActivos().get(words[0]).getChat()
 							.append(user + ": "
-									+ cliente.getPaqueteMensaje().getMsj() + "\n");
-							cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
-						}
-						else
-						{
+									+ words[1] + "\n");
+							cliente.getChatsActivos().get(words[0]).getTexto().grabFocus();
+						} else {
 							Chat chatPropio = new Chat(cliente);
 
-							chatPropio.setTitle(cliente.getPaqueteMensaje().getUserReceptor());
+							chatPropio.setTitle(words[0]);
 							chatPropio.setVisible(true);
 
-							cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserReceptor(), chatPropio);
+							cliente.getChatsActivos().put(words[0], chatPropio);
 							chatPropio.getChat().append(user + ": "
-									+ cliente.getPaqueteMensaje().getMsj() + "\n");
+									+ words[1] + "\n");
 						}
 						synchronized (cliente) {
 							cliente.notify();
@@ -272,11 +257,25 @@ public class VentanaPrincipal extends JFrame {
 						words[1] = words[1].trim();
 					}
 					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						//chat.append(user + " --> " + words[0] +":" + words[1] + "\n");
 						cliente.setAccion(Comando.MP);
-						cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
-						cliente.getPaqueteMensaje().setUserReceptor(words[0]);
-						cliente.getPaqueteMensaje().setMsj(words[1]);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
+						cliente.setPaqueteMensaje(paqueteMsj);
+
+						if(cliente.getChatsActivos().containsKey(words[0])){
+							cliente.getChatsActivos().get(words[0]).getChat()
+							.append(user + ": "
+									+ words[1] + "\n");
+							cliente.getChatsActivos().get(words[0]).getTexto().grabFocus();
+						} else {
+							Chat chatPropio = new Chat(cliente);
+
+							chatPropio.setTitle(words[0]);
+							chatPropio.setVisible(true);
+
+							cliente.getChatsActivos().put(words[0], chatPropio);
+							chatPropio.getChat().append(user + ": "
+									+ words[1] + "\n");
+						}
 
 						synchronized (cliente) {
 							cliente.notify();
@@ -406,8 +405,8 @@ public class VentanaPrincipal extends JFrame {
 	public ArrayList<Sala> getSalasDisponibles() {
 		return salasDisponibles;
 	}
-	
-	
+
+
 	public void setSalasDisponibles(ArrayList<Sala> salasDisponibles) {
 		this.salasDisponibles = salasDisponibles;
 	}

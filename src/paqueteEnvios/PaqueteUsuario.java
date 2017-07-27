@@ -3,10 +3,10 @@ package paqueteEnvios;
 import java.io.Serializable;
 import java.util.List;
 
-import intefaces.Sala;
 
 public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
+	private static final long serialVersionUID = 1L;
 	private String username;
 	private boolean inicioSesion;
 	private boolean estado;

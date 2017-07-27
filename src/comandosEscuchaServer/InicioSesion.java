@@ -28,7 +28,7 @@ public class InicioSesion extends ComandoEscuchaServer {
 				JOptionPane.showMessageDialog(null, "Ya existe una sesión iniciada con ese usuario.");
 			}
 			escuchaServer.getCliente().getPaqueteUsuario().setUsername(null);
-			new MenuInicio(escuchaServer.getCliente()).setVisible(true);
+			new MenuInicio(escuchaServer.getCliente());
 		}
 	}
 

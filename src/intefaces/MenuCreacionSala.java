@@ -7,7 +7,6 @@ import javax.swing.border.EmptyBorder;
 import cliente.Cliente;
 import paqueteEnvios.Comando;
 
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -20,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 public class MenuCreacionSala extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textFieldSala;
 	private String name;
@@ -46,7 +46,6 @@ public class MenuCreacionSala extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!textFieldSala.getText().equals("")){
 					name = textFieldSala.getText();
-					//Sala sala = new Sala(name);
 					cliente.getPaqueteSala().setNombreSala(name);
 					cliente.getPaqueteSala().setOwnerSala(cliente.getPaqueteUsuario().getUsername());
 					cliente.setAccion(Comando.NEWSALA);
@@ -58,7 +57,6 @@ public class MenuCreacionSala extends JFrame {
 			}
 		});
 		btnCrearSala.setBounds(10, 86, 154, 46);
-		//this.getRootPane().setDefaultButton(btnCrearSala);
 		contentPane.add(btnCrearSala);
 		
 		JButton btnSalir = new JButton("Salir");

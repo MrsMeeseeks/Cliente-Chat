@@ -1,12 +1,10 @@
 package intefaces;
 
 import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Window;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,13 +12,13 @@ import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
 import paqueteEnvios.Comando;
+import paqueteEnvios.PaqueteMensaje;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
@@ -31,6 +29,8 @@ import java.awt.event.WindowEvent;
 
 public class Sala extends JFrame  {
 
+	
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField texto;
 
@@ -120,9 +120,8 @@ public class Sala extends JFrame  {
 					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
 					cli.setAccion(Comando.CHATSALA);
-					cli.getPaqueteMensajeSala().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-					cli.getPaqueteMensajeSala().setMsj(texto.getText());
-					cli.getPaqueteMensajeSala().setNombreSala(nombreSala);
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),null,texto.getText(),nombreSala);
+					cli.setPaqueteMensaje(paqueteMsj);
 
 					texto.setText("");
 					texto.requestFocus();
@@ -138,26 +137,25 @@ public class Sala extends JFrame  {
 					}
 					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=cli.getPaqueteUsuario().getUsername() && words.length > 1 && words[1]!=null){
 						cli.setAccion(Comando.MP);
-						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-						cli.getPaqueteMensaje().setUserReceptor(words[0]);
-						cli.getPaqueteMensaje().setMsj(words[1]);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),words[0],words[1],null);
+						cli.setPaqueteMensaje(paqueteMsj);
 
-						if(cli.getChatsActivos().containsKey(cli.getPaqueteMensaje().getUserReceptor())){
-							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getChat()
+						if(cli.getChatsActivos().containsKey(words[0])){
+							cli.getChatsActivos().get(words[0]).getChat()
 							.append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ cli.getPaqueteMensaje().getMsj() + "\n");
-							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
+									+ words[1] + "\n");
+							cli.getChatsActivos().get(words[0]).getTexto().grabFocus();
 						}
 						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
 						{
 							Chat chatPropio = new Chat(cli);
 
-							chatPropio.setTitle(cli.getPaqueteMensaje().getUserReceptor());
+							chatPropio.setTitle(words[0]);
 							chatPropio.setVisible(true);
 
-							cli.getChatsActivos().put(cli.getPaqueteMensaje().getUserReceptor(), chatPropio);
+							cli.getChatsActivos().put(words[0], chatPropio);
 							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ cli.getPaqueteMensaje().getMsj() + "\n");
+									+ words[1] + "\n");
 						}
 						synchronized (cli) {
 							cli.notify();
@@ -188,10 +186,8 @@ public class Sala extends JFrame  {
 
 
 					cli.setAccion(Comando.MENCIONSALA);
-					cli.getPaqueteMencion().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-					cli.getPaqueteMencion().setUserReceptor(mensajeArray[0]);
-					cli.getPaqueteMencion().setNombreSala(nombreSala);
-					cli.getPaqueteMencion().setMsj(texto.getText());
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),mensajeArray[0],texto.getText(),nombreSala);
+					cli.setPaqueteMensaje(paqueteMsj);
 
 					texto.setText("");
 					texto.requestFocus();
@@ -218,9 +214,9 @@ public class Sala extends JFrame  {
 					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
 					cli.setAccion(Comando.CHATSALA);
-					cli.getPaqueteMensajeSala().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-					cli.getPaqueteMensajeSala().setMsj(texto.getText());
-					cli.getPaqueteMensajeSala().setNombreSala(nombreSala);
+					
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),null,texto.getText(),nombreSala);
+					cli.setPaqueteMensaje(paqueteMsj);
 
 					texto.setText("");
 					texto.requestFocus();
@@ -235,28 +231,27 @@ public class Sala extends JFrame  {
 						words[1] = words[1].trim();
 					}
 					if(cli.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=cli.getPaqueteUsuario().getUsername() && words.length > 1 && words[1]!=null){
-						//chat.append(cli.getPaqueteUsuario().getUsername() + " --> " + words[0] +":" + words[1] + "\n");
-						cli.setAccion(Comando.MP);
-						cli.getPaqueteMensaje().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-						cli.getPaqueteMensaje().setUserReceptor(words[0]);
-						cli.getPaqueteMensaje().setMsj(words[1]);
 
-						if(cli.getChatsActivos().containsKey(cli.getPaqueteMensaje().getUserReceptor())){
-							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getChat()
+						cli.setAccion(Comando.MP);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),words[0],words[1],null);
+						cli.setPaqueteMensaje(paqueteMsj);
+
+						if(cli.getChatsActivos().containsKey(words[0])){
+							cli.getChatsActivos().get(words[0]).getChat()
 							.append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ cli.getPaqueteMensaje().getMsj() + "\n");
-							cli.getChatsActivos().get(cli.getPaqueteMensaje().getUserReceptor()).getTexto().grabFocus();
+									+ words[1] + "\n");
+							cli.getChatsActivos().get(words[0]).getTexto().grabFocus();
 						}
 						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
 						{
 							Chat chatPropio = new Chat(cli);
 
-							chatPropio.setTitle(cli.getPaqueteMensaje().getUserReceptor());
+							chatPropio.setTitle(words[0]);
 							chatPropio.setVisible(true);
 
-							cli.getChatsActivos().put(cli.getPaqueteMensaje().getUserReceptor(), chatPropio);
+							cli.getChatsActivos().put(words[0], chatPropio);
 							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ cli.getPaqueteMensaje().getMsj() + "\n");
+									+ words[1] + "\n");
 						}
 						synchronized (cli) {
 							cli.notify();
@@ -287,10 +282,8 @@ public class Sala extends JFrame  {
 
 
 					cli.setAccion(Comando.MENCIONSALA);
-					cli.getPaqueteMencion().setUserEmisor(cli.getPaqueteUsuario().getUsername());
-					cli.getPaqueteMencion().setUserReceptor(mensajeArray[0]);
-					cli.getPaqueteMencion().setNombreSala(nombreSala);
-					cli.getPaqueteMencion().setMsj(texto.getText());
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),mensajeArray[0],texto.getText(),nombreSala);
+					cli.setPaqueteMensaje(paqueteMsj);
 
 					texto.setText("");
 					texto.requestFocus();

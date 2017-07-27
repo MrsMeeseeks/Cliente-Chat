@@ -4,16 +4,16 @@ import java.io.IOException;
 
 import comandosEscuchaServer.ComandoCliente;
 import paqueteEnvios.Comando;
-import paqueteEnvios.PaqueteMensajeSala;
+import paqueteEnvios.PaqueteMensaje;
 
 public class ChatSala extends ComandoCliente {
 
 	@Override
 	public void ejecutar() {
-		PaqueteMensajeSala paqueteMensajeSala = cliente.getPaqueteMensajeSala();
-		paqueteMensajeSala.setComando(Comando.CHATSALA);
+		PaqueteMensaje paqueteMensaje = cliente.getPaqueteMensaje();
+		paqueteMensaje.setComando(Comando.CHATSALA);
 		try {
-			cliente.getSalida().writeObject(gson.toJson(paqueteMensajeSala));
+			cliente.getSalida().writeObject(gson.toJson(paqueteMensaje));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

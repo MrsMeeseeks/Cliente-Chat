@@ -17,23 +17,23 @@ import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
 import paqueteEnvios.Comando;
+import paqueteEnvios.PaqueteMensaje;
 
-import java.awt.SystemColor;
 import java.awt.Color;
 import java.awt.Font;
 
 public class Chat extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField texto;
 	private JTextArea chat;
 	private Cliente client;
 
-	
+
 
 	public Chat(final Cliente cliente) {
 		this.client = cliente;
-		setTitle("Mi Chat");
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 485, 315);
@@ -73,12 +73,10 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("")) {
 					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
-					
-					cliente.setAccion(Comando.MP);
 
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMsj(texto.getText());
+					cliente.setAccion(Comando.MP);
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),getTitle(),texto.getText(),null);
+					cliente.setPaqueteMensaje(paqueteMsj);
 
 					synchronized (cliente) {
 						cliente.notify();
@@ -96,12 +94,10 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("")) {
 					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
-					
-					cliente.setAccion(Comando.MP);
 
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMsj(texto.getText());
+					cliente.setAccion(Comando.MP);
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),getTitle(),texto.getText(),null);
+					cliente.setPaqueteMensaje(paqueteMsj);
 
 					synchronized (cliente) {
 						cliente.notify();
@@ -131,7 +127,7 @@ public class Chat extends JFrame {
 				JOptionPane.YES_NO_OPTION);
 		if (res == JOptionPane.YES_OPTION) {
 			client.getChatsActivos().remove(getTitle());
-			VentanaPrincipal.getEnviarATodosBut().setEnabled(true);
+			VentanaPrincipal.getEnviarATodosBut().setEnabled(true); // ?
 			dispose();
 		}
 	}

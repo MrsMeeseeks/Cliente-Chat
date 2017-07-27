@@ -2,9 +2,7 @@ package intefaces;
 
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;
-import java.net.MalformedURLException;
 
-import javax.swing.ImageIcon;
 
 public class Notificacion {
 	

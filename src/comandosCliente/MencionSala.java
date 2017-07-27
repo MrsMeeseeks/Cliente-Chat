@@ -5,16 +5,16 @@ import java.io.IOException;
 
 import comandosEscuchaServer.ComandoCliente;
 import paqueteEnvios.Comando;
-import paqueteEnvios.PaqueteMencion;
+import paqueteEnvios.PaqueteMensaje;
 
 public class MencionSala extends ComandoCliente {
 
 	@Override
 	public void ejecutar() {
-		PaqueteMencion paqueteMencion = cliente.getPaqueteMencion();
-		paqueteMencion.setComando(Comando.MENCIONSALA);
+		PaqueteMensaje paqueteMensaje = cliente.getPaqueteMensaje();
+		paqueteMensaje.setComando(Comando.MENCIONSALA);
 		try {
-			cliente.getSalida().writeObject(gson.toJson(paqueteMencion));
+			cliente.getSalida().writeObject(gson.toJson(paqueteMensaje));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

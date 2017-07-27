@@ -122,9 +122,9 @@ public class EscuchaServer extends Thread {
 		}
 	}
 
-	public static ArrayList<String> getUsuariosConectados() {
-		return usuariosConectados;
-	}
+//	public static ArrayList<String> getUsuariosConectados() {
+//		return usuariosConectados;
+//	}
 	
 	public Cliente getCliente() {
 		return cliente;

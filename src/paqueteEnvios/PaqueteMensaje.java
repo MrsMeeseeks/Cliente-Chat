@@ -4,11 +4,20 @@ import java.io.Serializable;
 
 public class PaqueteMensaje extends Paquete implements Serializable, Cloneable {
 
+	private static final long serialVersionUID = 1L;
 	private String userEmisor;
 	private String userReceptor;
 	private String msj;
+	private String nombreSala;
 
 	public PaqueteMensaje() {
+	}
+	
+	public PaqueteMensaje(String emisor, String destinatario, String msj, String nombreSala) {
+		this.userEmisor = emisor;
+		this.userReceptor = destinatario;
+		this.msj = msj;
+		this.nombreSala = nombreSala;
 	}
 
 	public String getMsj() {
@@ -33,6 +42,14 @@ public class PaqueteMensaje extends Paquete implements Serializable, Cloneable {
 
 	public void setUserReceptor(String idReceptor) {
 		this.userReceptor = idReceptor;
+	}
+	
+	public String getNombreSala() {
+		return nombreSala;
+	}
+
+	public void setNombreSala(String nombreSala) {
+		this.nombreSala = nombreSala;
 	}
 
 	public Object clone() {

@@ -2,8 +2,7 @@ package intefaces;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,7 +13,6 @@ import paqueteEnvios.Comando;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -25,12 +23,21 @@ import javax.swing.JLayeredPane;
 
 public class MenuInicioSesion extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtUser;
 	private JPasswordField passwordField;
 
 	public MenuInicioSesion(final Cliente cliente) {
 
+
+		
+
+		setTitle("Iniciar Sesion");
+		setBounds(100, 100, 450, 300);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -39,15 +46,10 @@ public class MenuInicioSesion extends JFrame {
 					cliente.setAccion(Comando.DESCONECTAR);
 					cliente.notify();
 				}
-				setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				System.exit(0);
+				dispose();
 			}
 		});
-
-		setTitle("Iniciar Sesion");
-		setBounds(100, 100, 450, 300);
-		setLocationRelativeTo(null);
-		setResizable(false);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setBackground(Color.GRAY);
@@ -77,6 +79,7 @@ public class MenuInicioSesion extends JFrame {
 
 		passwordField = new JPasswordField();
 		passwordField.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				if(!txtUser.getText().equals("") && !passwordField.getText().equals("")){
 					synchronized(cliente){

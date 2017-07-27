@@ -4,58 +4,42 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import com.google.gson.Gson;
 
 import comandosEscuchaServer.ComandoCliente;
 import intefaces.Chat;
 import intefaces.MenuInicio;
 import intefaces.Sala;
-import intefaces.VentanaPrincipal;
 import paqueteEnvios.Paquete;
-import paqueteEnvios.PaqueteDeUsuariosYSalas;
-import paqueteEnvios.PaqueteMencion;
 import paqueteEnvios.PaqueteMensaje;
-import paqueteEnvios.Comando;
-import paqueteEnvios.PaqueteMensajeSala;
 import paqueteEnvios.PaqueteSala;
 import paqueteEnvios.PaqueteUsuario;
 
 public class Cliente extends Thread {
 	private Socket cliente;
 	private static String miIp;
+		
 	private ObjectInputStream entrada;
 	private ObjectOutputStream salida;
+	
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
-	
+	private PaqueteSala paqueteSala = new PaqueteSala();
 
-	private PaqueteMensajeSala paqueteMensajeSala = new PaqueteMensajeSala();
-	private PaqueteMencion paqueteMencion = new PaqueteMencion();
+	
 	private Map<String, Chat> chatsActivos = new HashMap<>();
 	private Map<String, Sala> salasActivas = new HashMap<>();
-	private VentanaPrincipal chat;
-
-	private PaqueteSala paqueteSala = new PaqueteSala();
 
 	private int accion; 
 
-	private final Gson gson = new Gson();
-
-	private String ip;
-	private int puerto;
 	public Cliente(String newIp, int newPort) {
 
-		this.ip = newIp;
-		this.puerto = newPort;
-
 		try {
-			cliente = new Socket(ip, puerto);
+			cliente = new Socket(newIp, newPort);
 			miIp = cliente.getInetAddress().getHostAddress(); 
 			entrada = new ObjectInputStream(cliente.getInputStream()); //objeto recibido del server
 			salida = new ObjectOutputStream(cliente.getOutputStream()); //objeto a enviar al server
@@ -71,7 +55,7 @@ public class Cliente extends Thread {
 	public void run() {
 		synchronized (this) {
 			try {
-				new MenuInicio(this).setVisible(true);
+				new MenuInicio(this);
 
 				this.wait();
 
@@ -90,7 +74,6 @@ public class Cliente extends Thread {
 					salida.flush();
 					
 					this.wait();
-
 				}
 
 			} catch (IOException | InterruptedException  e) {
@@ -99,8 +82,6 @@ public class Cliente extends Thread {
 				System.exit(1);
 			} 
 		}
-
-
 	}
 
 	public void setAccion(int accion) {
@@ -124,7 +105,7 @@ public class Cliente extends Thread {
 	}
 
 	public void setMiIp(final String miIp) {
-		this.miIp = miIp;
+		Cliente.miIp = miIp;
 	}
 
 	public ObjectInputStream getEntrada() {
@@ -151,11 +132,10 @@ public class Cliente extends Thread {
 		return paqueteMensaje;
 	}
 
-	public void setPaqueteMensaje(PaqueteMensaje fromJson) {
-		this.paqueteMensaje.setMsj(fromJson.getMsj());
-		this.paqueteMensaje.setUserEmisor(fromJson.getUserEmisor());
-		this.paqueteMensaje.setUserReceptor(fromJson.getUserReceptor());
+	public void setPaqueteMensaje(PaqueteMensaje paqueteMensaje) {
+		this.paqueteMensaje = paqueteMensaje;
 	}
+
 
 	public Map<String, Chat> getChatsActivos() {
 		return chatsActivos;
@@ -175,34 +155,6 @@ public class Cliente extends Thread {
 
 	public void setPaqueteSala(PaqueteSala paqueteSala) {
 		this.paqueteSala = paqueteSala;
-	}
-
-	public PaqueteMensajeSala getPaqueteMensajeSala() {
-		return paqueteMensajeSala;
-	}
-
-	public void setPaqueteMensajeSala(PaqueteMensajeSala paqueteMensajeSala) {
-		this.paqueteMensajeSala.setMsj(paqueteMensajeSala.getMsj());
-		this.paqueteMensajeSala.setUserEmisor(paqueteMensajeSala.getUserEmisor());
-	}
-
-	public PaqueteMencion getPaqueteMencion() {
-		return paqueteMencion;
-	}
-
-	public void setPaqueteMencion(PaqueteMencion paqueteMencion) {
-		this.paqueteMencion.setNombreSala(paqueteMencion.getNombreSala());
-		this.paqueteMencion.setUserEmisor(paqueteMencion.getUserEmisor());
-		this.paqueteMencion.setUserReceptor(paqueteMencion.getUserReceptor());
-		this.paqueteMencion.setMsj(paqueteMencion.getMsj());
-	}
-	
-	public VentanaPrincipal getChat() {
-		return chat;
-	}
-
-	public void setChat(VentanaPrincipal chat) {
-		this.chat = chat;
 	}
 
 }

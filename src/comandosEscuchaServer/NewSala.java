@@ -6,17 +6,17 @@ import javax.swing.JOptionPane;
 
 import cliente.Cliente;
 import paqueteEnvios.Paquete;
-import paqueteEnvios.PaqueteDeSalas;
+import paqueteEnvios.PaqueteDeUsuariosYSalas;
 
 public class NewSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {
 		Cliente cliente = escuchaServer.getCliente();
-		PaqueteDeSalas paqueteDeSalas = gson.fromJson(cadenaLeida, PaqueteDeSalas.class);
+		PaqueteDeUsuariosYSalas paqueteDUS = gson.fromJson(cadenaLeida, PaqueteDeUsuariosYSalas.class);
 
-		if( paqueteDeSalas.getMsj().equals(Paquete.msjExito)) {
-			ArrayList<String> listadoSalas = paqueteDeSalas.getSalas();
+		if( paqueteDUS.getMsj().equals(Paquete.msjExito)) {
+			ArrayList<String> listadoSalas = paqueteDUS.getSalas();
 			cliente.getPaqueteUsuario().setListaDeSalas(listadoSalas);
 			escuchaServer.actualizarListaSalas();
 		} else {

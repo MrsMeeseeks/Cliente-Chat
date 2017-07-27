@@ -4,20 +4,16 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-import cliente.*;
 import paqueteEnvios.Comando;
 
 import javax.swing.JTextField;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
 
-/*import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;*/
+import cliente.Cliente;
+
+import java.awt.Font;
+
+
 import javax.swing.JButton;
-import javax.swing.ImageIcon;
 
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
@@ -25,11 +21,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 public class MenuRegistro extends JFrame {
 
+	
+	private static final long serialVersionUID = 1L;
 	JPanel contentPane;
 	private JTextField txtUsuario;
 	private JPasswordField pwPassword;
@@ -37,6 +34,15 @@ public class MenuRegistro extends JFrame {
 	public MenuRegistro(final Cliente cliente) {
 
 
+		
+		setTitle("Registrarse");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setResizable(false);
+		setBounds(100, 100, 450, 300);
+		setLayout(null);
+		setBackground(Color.GRAY);
+		setLocationRelativeTo(null);
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -45,17 +51,8 @@ public class MenuRegistro extends JFrame {
 					cliente.notify();
 				}
 				dispose();
-				System.exit(0);
 			}
 		});
-		
-		setTitle("Registrarse");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setResizable(false);
-		setBounds(100, 100, 450, 300);
-		setLayout(null);
-		setBackground(Color.GRAY);
-		setLocationRelativeTo(null);
 
 		JPanel contentPane = new JPanel();
 		contentPane.setBounds(0, 0, 444, 271);
@@ -84,6 +81,7 @@ public class MenuRegistro extends JFrame {
 
 		pwPassword = new JPasswordField();
 		pwPassword.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				synchronized(cliente){
 					cliente.getPaqueteUsuario().setUsername(txtUsuario.getText());
@@ -102,6 +100,7 @@ public class MenuRegistro extends JFrame {
 		contentPane.add(txtUsuario, new Integer(1));
 		txtUsuario.setColumns(10);
 		btnRegistrarse.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				synchronized(cliente){
 					cliente.getPaqueteUsuario().setUsername(txtUsuario.getText());

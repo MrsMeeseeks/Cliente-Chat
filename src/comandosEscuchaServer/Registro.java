@@ -28,7 +28,7 @@ public class Registro extends ComandoEscuchaServer {
 				JOptionPane.showMessageDialog(null, "El usuario ya se encuentra en uso.");
 			}
 			escuchaServer.getCliente().getPaqueteUsuario().setUsername(null);
-			new MenuInicio(escuchaServer.getCliente()).setVisible(true);
+			new MenuInicio(escuchaServer.getCliente());
 		}
 	}
 

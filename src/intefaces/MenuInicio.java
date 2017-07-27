@@ -1,19 +1,15 @@
 package intefaces;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
+
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import cliente.*;
+import cliente.Cliente;
 import paqueteEnvios.Comando;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -23,30 +19,32 @@ import javax.swing.JLayeredPane;
 
 public class MenuInicio extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private Cliente cliente;
 
-	public MenuInicio(final Cliente cliente) {
+	public MenuInicio(final Cliente cli) {
 		
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		// En caso de cerrar la ventana
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				synchronized(cliente){
-					cliente.setAccion(Comando.DESCONECTAR);
-					cliente.notify();
-				}
-				dispose();
-				System.exit(0);
-			}
-		});
-		
-		// Propiedades de la ventana
+		this.cliente = cli;
 		setTitle("Inicio");
 		setBounds(100, 100, 450, 300);
 		setLocationRelativeTo(null);
-		setResizable(false);
+		setResizable(false);	
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+		
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+					synchronized (cliente) {
+						cliente.setAccion(Comando.DESCONECTAR);
+						cliente.notify();
+					}
+					dispose();
+			}
+		});
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setBackground(Color.GRAY);
@@ -85,6 +83,7 @@ public class MenuInicio extends JFrame {
 		
 		this.getRootPane().setDefaultButton(btnIniciarSesion);
 		btnIniciarSesion.requestFocus();
+		setVisible(true);
 	}
 }
 

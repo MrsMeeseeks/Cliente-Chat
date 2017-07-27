@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cloneable {
 
+	
+	private static final long serialVersionUID = 1L;
 	private ArrayList<String> usuarios;
 	private ArrayList<String> salas;
 	private Map<String, PaqueteUsuario> usuariosConectados;

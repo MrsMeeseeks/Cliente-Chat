@@ -18,13 +18,13 @@ import java.awt.event.ActionEvent;
 
 public class Inicio extends JFrame{
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private String ipScanned = "localhost";
 	private int puertoScanned = 1234;
 	private Cliente cliente;
-	/**
-	 * Launch the application.
-	 */
+	
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -38,9 +38,7 @@ public class Inicio extends JFrame{
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
+	
 	public Inicio() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 348, 182);

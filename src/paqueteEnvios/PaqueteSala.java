@@ -3,10 +3,10 @@ package paqueteEnvios;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import intefaces.Sala;
 
 public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 	
+	private static final long serialVersionUID = 1L;
 	private String nombreSala;
 	private String historial = "";
 	private String texto;

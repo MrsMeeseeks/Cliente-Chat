@@ -9,20 +9,20 @@ public class MP extends ComandoEscuchaServer {
 	@Override
 	public void ejecutar() {
 		Cliente cliente = escuchaServer.getCliente();
-		cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(cadenaLeida, PaqueteMensaje.class));
+		PaqueteMensaje paqueteMensaje = gson.fromJson(cadenaLeida, PaqueteMensaje.class);
 
-		if (!(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserEmisor()))) {
+		if (!(cliente.getChatsActivos().containsKey(paqueteMensaje.getUserEmisor()))) {
 			Chat chat = new Chat(cliente);
 
-			chat.setTitle(cliente.getPaqueteMensaje().getUserEmisor());
+			chat.setTitle(paqueteMensaje.getUserEmisor());
 			chat.setVisible(true);
 
-			cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserEmisor(), chat);
+			cliente.getChatsActivos().put(paqueteMensaje.getUserEmisor(), chat);
 		}
-		cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat()
-		.append(cliente.getPaqueteMensaje().getUserEmisor() + ": "
-				+ cliente.getPaqueteMensaje().getMsj() + "\n");
-		cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();		
+		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).getChat()
+		.append(paqueteMensaje.getUserEmisor() + ": "
+				+ paqueteMensaje.getMsj() + "\n");
+		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).getTexto().grabFocus();		
 	}
 
 }
