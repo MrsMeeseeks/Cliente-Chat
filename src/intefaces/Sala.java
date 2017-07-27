@@ -83,6 +83,8 @@ public class Sala extends JFrame  {
 		chat.setText(cli.getPaqueteSala().getHistorial());
 		chat.setEnabled(false);
 		chat.setEditable(false);
+		chat.setColumns(30);
+		chat.setLineWrap(true);
 		scrollPaneChat.setViewportView(chat);
 
 		JScrollPane scrollPaneConectados = new JScrollPane();

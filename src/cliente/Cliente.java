@@ -32,6 +32,8 @@ public class Cliente extends Thread {
 	private ObjectOutputStream salida;
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
+	
+
 	private PaqueteMensajeSala paqueteMensajeSala = new PaqueteMensajeSala();
 	private PaqueteMencion paqueteMencion = new PaqueteMencion();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
@@ -101,13 +103,6 @@ public class Cliente extends Thread {
 						salida.writeObject(gson.toJson(paqueteSala));
 						break;
 						
-					case Comando.TALK:
-						paqueteMensaje.setComando(Comando.TALK);
-						// Le envio el paquete al servidor
-						salida.writeObject(gson.toJson(paqueteMensaje));
-
-						break;
-
 					case Comando.CHATSALA:
 						paqueteMensajeSala.setComando(Comando.CHATSALA);
 						// Le envio el paquete al servidor
@@ -315,6 +310,14 @@ public class Cliente extends Thread {
 		this.paqueteMencion.setUserEmisor(paqueteMencion.getUserEmisor());
 		this.paqueteMencion.setUserReceptor(paqueteMencion.getUserReceptor());
 		this.paqueteMencion.setMsj(paqueteMencion.getMsj());
+	}
+	
+	public VentanaPrincipal getChat() {
+		return chat;
+	}
+
+	public void setChat(VentanaPrincipal chat) {
+		this.chat = chat;
 	}
 
 }

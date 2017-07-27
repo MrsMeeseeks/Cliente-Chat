@@ -161,8 +161,6 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		});
 		listaSalas.setModel(modeloSalas);
 
-		//comentario para poder commitear
-
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(209, 11, 443, 436);
 		contentPane.add(scrollPane_1);
@@ -172,6 +170,8 @@ public class VentanaPrincipal extends JFrame implements Runnable {
 		chat.setEditable(false);
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
+		chat.setColumns(30);
+		chat.setLineWrap(true);
 		scrollPane_1.setViewportView(chat);
 
 		texto = new JTextField();

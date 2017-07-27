@@ -54,6 +54,8 @@ public class Chat extends JFrame {
 		chat.setForeground(Color.WHITE);
 		chat.setBackground(Color.DARK_GRAY);
 		chat.setEditable(false);
+		chat.setColumns(30);
+		chat.setLineWrap(true);
 		scrollPane.setViewportView(chat);
 
 		texto = new JTextField();
@@ -72,7 +74,7 @@ public class Chat extends JFrame {
 				if (!texto.getText().equals("")) {
 					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 					
-					cliente.setAccion(Comando.TALK);
+					cliente.setAccion(Comando.MP);
 
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
@@ -94,18 +96,8 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (!texto.getText().equals("")) {
 					chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
-
-					/*
-					 * Para la aplicacion de las salas
-					 * 
-					if (getTitle() != "Sala") {
-						cliente.setAccion(Comando.TALK);
-					} else {
-						cliente.setAccion(Comando.CHATALL);
-					}
-					*/
 					
-					cliente.setAccion(Comando.TALK);
+					cliente.setAccion(Comando.MP);
 
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
