@@ -7,7 +7,7 @@ public class PaqueteMensaje extends Paquete implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private String userEmisor;
 	private String userReceptor;
-	private String msj;
+	private String msjChat;
 	private String nombreSala;
 
 	public PaqueteMensaje() {
@@ -16,16 +16,16 @@ public class PaqueteMensaje extends Paquete implements Serializable, Cloneable {
 	public PaqueteMensaje(String emisor, String destinatario, String msj, String nombreSala) {
 		this.userEmisor = emisor;
 		this.userReceptor = destinatario;
-		this.msj = msj;
+		this.msjChat = msj;
 		this.nombreSala = nombreSala;
 	}
 
-	public String getMsj() {
-		return msj;
+	public String getMsjChat() {
+		return msjChat;
 	}
 
-	public void setMsj(String mensaje) {
-		this.msj = mensaje;
+	public void setMsjChat(String mensaje) {
+		this.msjChat = mensaje;
 	}
 
 	public String getUserEmisor() {
