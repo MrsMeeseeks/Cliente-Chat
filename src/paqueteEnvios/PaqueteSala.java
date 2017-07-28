@@ -91,4 +91,13 @@ public class PaqueteSala extends Paquete implements Serializable, Cloneable {
 		this.UsuariosConectados.remove(username);
 	}
 
+	public void agregarMsj(String msjAgregar) {
+		this.historial = historial + msjAgregar;
+		
+	}
+
+	public void agregarUsuario(String cliente) {
+		this.UsuariosConectados.add(cliente);
+	}
+
 }

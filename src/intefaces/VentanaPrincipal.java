@@ -147,58 +147,9 @@ public class VentanaPrincipal extends JFrame {
 		JTextField texto = new JTextField();
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
-
-					chat.append(user + " : " + texto.getText() + "\n");
-
-					cliente.setAccion(Comando.CHATALL);
-					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),null,texto.getText(),null);
-					cliente.setPaqueteMensaje(paqueteMsj);
-					texto.setText("");
-					texto.requestFocus();
-					synchronized (cliente) {
-						cliente.notify();
-					}
-				}
-				else if(!texto.getText().equals("")){
-					String[] words;
-					words = texto.getText().substring(1).split(" ", 2);
-					if (words.length > 1 && words[1] != null) {
-						words[1] = words[1].trim();
-					}
-					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						cliente.setAccion(Comando.MP);
-						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
-						cliente.setPaqueteMensaje(paqueteMsj);
-
-						if(cliente.getChatsActivos().containsKey(words[0])){
-							String msjAgregar = user + ": " + words[1] + "\n";
-							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
-						} else {
-							Chat chatPropio = new Chat(cliente);
-
-							chatPropio.setTitle(words[0]);
-							chatPropio.setVisible(true);
-
-							cliente.getChatsActivos().put(words[0], chatPropio);
-							String msjAgregar = user + ": " + words[1] + "\n";
-							chatPropio.agregarMsj(msjAgregar);
-						}
-						synchronized (cliente) {
-							cliente.notify();
-						}
-						texto.setText("");
-
-						texto.requestFocus();
-					}
-					else
-					{
-						chat.append("No Existe el usuario " + words[0] + "\n");
-
-						texto.setText("");
-						texto.requestFocus();
-					}
-				}
+				enviarMsjAServidor(texto.getText());
+				texto.setText("");
+				texto.grabFocus();
 			}
 		});
 
@@ -214,61 +165,9 @@ public class VentanaPrincipal extends JFrame {
 		enviarATodos.setEnabled(true);
 		enviarATodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
-					chat.append(user + ": " + texto.getText() + "\n");
-
-					cliente.setAccion(Comando.CHATALL);
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMsj(texto.getText());
-					synchronized (cliente) {
-						cliente.notify();
-					}
-					texto.setText("");
-
-					texto.requestFocus();
-				}
-				else if(!texto.getText().equals("")){
-					String[] words;
-					words = texto.getText().substring(1).split(" ", 2);
-					if (words.length > 1 && words[1] != null) {
-						words[1] = words[1].trim();
-					}
-					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && words[0]!=user){
-						cliente.setAccion(Comando.MP);
-						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
-						cliente.setPaqueteMensaje(paqueteMsj);
-
-						if(cliente.getChatsActivos().containsKey(words[0])){
-							String msjAgregar = user + ": " + words[1] + "\n";
-							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
-						} else {
-							Chat chatPropio = new Chat(cliente);
-
-							chatPropio.setTitle(words[0]);
-							chatPropio.setVisible(true);
-
-							cliente.getChatsActivos().put(words[0], chatPropio);
-							String msjAgregar = user + ": " + words[1] + "\n";
-							chatPropio.agregarMsj(msjAgregar);
-						}
-
-						synchronized (cliente) {
-							cliente.notify();
-						}
-						texto.setText("");
-
-						texto.requestFocus();
-					}
-					else
-					{
-						chat.append("No Existe el usuario " + words[0] + "\n");
-
-						texto.setText("");
-						texto.requestFocus();
-					}
-				}
-
+				enviarMsjAServidor(texto.getText());
+				texto.setText("");
+				texto.grabFocus();
 			}
 
 		});
@@ -374,5 +273,56 @@ public class VentanaPrincipal extends JFrame {
 
 	public static void cambiarModeloSalas(DefaultListModel<String> modelo) {
 		listaSalas.setModel(modelo);		
+	}
+	
+	public void enviarMsjAServidor(String msj) {
+		if(!msj.equals("")) {
+			if(msj.startsWith("/")) {
+				String[] words;
+				words = msj.substring(1).split(" ", 2);
+				if (words.length > 1 && words[1] != "") {
+					words[1] = words[1].trim();
+					
+					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && !words[0].equals(user)){
+						cliente.setAccion(Comando.MP);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
+						cliente.setPaqueteMensaje(paqueteMsj);
+
+						if(cliente.getChatsActivos().containsKey(words[0])){
+							String msjAgregar = user + ": " + words[1] + "\n";
+							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
+						} else {
+							Chat chatPropio = new Chat(cliente);
+
+							chatPropio.setTitle(words[0]);
+
+							cliente.getChatsActivos().put(words[0], chatPropio);
+							String msjAgregar = user + ": " + words[1] + "\n";
+							chatPropio.agregarMsj(msjAgregar);
+						}
+						synchronized (cliente) {
+							cliente.notify();
+						}
+					}
+
+				} else if(words.length<=1 && !words[0].equals(user)){
+					Chat chatPropio = new Chat(cliente);
+					chatPropio.setTitle(words[0]);
+					cliente.getChatsActivos().put(words[0], chatPropio);
+				}
+				
+			} else {
+				chat.append(user + " : " + msj + "\n");
+
+				cliente.setAccion(Comando.CHATALL);
+				PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),null,msj,null);
+				cliente.setPaqueteMensaje(paqueteMsj);
+			
+				synchronized (cliente) {
+					cliente.notify();
+				}
+			}
+		}
+		
 	}
 }

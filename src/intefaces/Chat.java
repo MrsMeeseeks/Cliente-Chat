@@ -33,7 +33,7 @@ public class Chat extends JFrame {
 	
 		setBounds(100, 100, 485, 315);
 		setResizable(false);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
