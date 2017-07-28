@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 import cliente.Cliente;
 import paqueteEnvios.Comando;
+import paqueteEnvios.PaqueteSala;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -77,8 +78,8 @@ public class MenuCreacionSala extends JFrame {
 		textFieldSala.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!textFieldSala.getText().equals("")){
-					name = textFieldSala.getText();
-					cliente.getPaqueteSala().setNombreSala(name);
+					PaqueteSala paqueteSala = new PaqueteSala(textFieldSala.getText(),null,cliente.getPaqueteUsuario().getUsername());
+					cliente.setPaqueteSala(paqueteSala);
 					cliente.setAccion(Comando.NEWSALA);
 					synchronized (cliente) {
 						cliente.notify();
@@ -90,6 +91,6 @@ public class MenuCreacionSala extends JFrame {
 		textFieldSala.setBounds(10, 45, 154, 30);
 		contentPane.add(textFieldSala);
 		textFieldSala.setColumns(10);
-		
+		setVisible(true);
 	}
 }

@@ -14,12 +14,13 @@ public class EntrarSala extends ComandoEscuchaServer {
 		Cliente cliente = escuchaServer.getCliente();
 		PaqueteSala paqueteSala = gson.fromJson(cadenaLeida, PaqueteSala.class);
 		cliente.setPaqueteSala(paqueteSala);
-		if (cliente.getPaqueteSala().getMsj().equals(Paquete.msjExito)) {
-			if (!(cliente.getSalasActivas().containsKey(cliente.getPaqueteSala().getNombreSala()))) {
-				Sala sala = new Sala(cliente);
-				sala.getChat().setText(cliente.getPaqueteSala().getHistorial());
-				cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
+		if (paqueteSala.getMsj().equals(Paquete.msjExito)) {
+			if (!cliente.getSalasActivas().containsKey(paqueteSala.getNombreSala())) {
 				
+				Sala sala = new Sala(cliente);
+				sala.cargarHistorial(paqueteSala.getHistorial());
+				
+				cliente.getSalasActivas().put(cliente.getPaqueteSala().getNombreSala(), sala);
 				escuchaServer.actualizarListaConectadosSala(paqueteSala);
 			} else {
 				JOptionPane.showMessageDialog(null, "Ya se encuentra conectado a esta sala");

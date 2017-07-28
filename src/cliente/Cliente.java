@@ -157,4 +157,8 @@ public class Cliente extends Thread {
 		this.paqueteSala = paqueteSala;
 	}
 
+	public void eliminarChatActivo(String clave) {
+		this.chatsActivos.remove(clave);
+	}
+
 }

@@ -13,12 +13,14 @@ import javax.swing.border.EmptyBorder;
 import cliente.Cliente;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
+import paqueteEnvios.PaqueteSala;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
@@ -29,7 +31,7 @@ import java.awt.event.WindowEvent;
 
 public class Sala extends JFrame  {
 
-	
+
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField texto;
@@ -44,21 +46,21 @@ public class Sala extends JFrame  {
 	private JList<String> listaConectadosSala = new JList<String>();
 
 	public Sala(Cliente cli) {
-		
+
 		this.nombreSala = cli.getPaqueteSala().getNombreSala();
 		this.ownerSala = cli.getPaqueteSala().getOwnerSala();
 		setTitle(nombreSala);
 		setResizable(false);
 		setBounds(100, 100, 646, 300);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				if (abrirVentanaConfirmaSalir()) {
 					synchronized (cli) {
-						cli.getPaqueteSala().setNombreSala(nombreSala);
-						cli.getPaqueteSala().setCliente(cli.getPaqueteUsuario().getUsername());
+						PaqueteSala paqueteSala = new PaqueteSala(nombreSala, cli.getPaqueteUsuario().getUsername());
+						cli.setPaqueteSala(paqueteSala);
 						cli.setAccion(Comando.DESCONECTARDESALA);
 						cli.notify();
 					}
@@ -99,12 +101,9 @@ public class Sala extends JFrame  {
 				if (arg0.getClickCount() == 2) {
 					if (listaConectadosSala.getSelectedValue() != null) {
 						if (!cli.getChatsActivos().containsKey(listaConectadosSala.getSelectedValue())) {
-							if (cli != null) {
-								Chat chat = new Chat(cli);
-								cli.getChatsActivos().put(listaConectadosSala.getSelectedValue(), chat);
-								chat.setTitle(listaConectadosSala.getSelectedValue());
-								chat.setVisible(true);
-							}
+							Chat chat = new Chat(cli);
+							cli.getChatsActivos().put(listaConectadosSala.getSelectedValue(), chat);
+							chat.setTitle(listaConectadosSala.getSelectedValue());
 						}
 					}
 				}
@@ -141,10 +140,8 @@ public class Sala extends JFrame  {
 						cli.setPaqueteMensaje(paqueteMsj);
 
 						if(cli.getChatsActivos().containsKey(words[0])){
-							cli.getChatsActivos().get(words[0]).getChat()
-							.append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ words[1] + "\n");
-							cli.getChatsActivos().get(words[0]).getTexto().grabFocus();
+							String msjAgregar = cli.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
+							cli.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
 						}
 						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
 						{
@@ -154,8 +151,8 @@ public class Sala extends JFrame  {
 							chatPropio.setVisible(true);
 
 							cli.getChatsActivos().put(words[0], chatPropio);
-							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ words[1] + "\n");
+							String msjAgregar = cli.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
+							chatPropio.agregarMsj(msjAgregar);
 						}
 						synchronized (cli) {
 							cli.notify();
@@ -214,7 +211,7 @@ public class Sala extends JFrame  {
 					chat.append(cli.getPaqueteUsuario().getUsername() + ": " + texto.getText() + "\n");
 
 					cli.setAccion(Comando.CHATSALA);
-					
+
 					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cli.getPaqueteUsuario().getUsername(),null,texto.getText(),nombreSala);
 					cli.setPaqueteMensaje(paqueteMsj);
 
@@ -237,10 +234,8 @@ public class Sala extends JFrame  {
 						cli.setPaqueteMensaje(paqueteMsj);
 
 						if(cli.getChatsActivos().containsKey(words[0])){
-							cli.getChatsActivos().get(words[0]).getChat()
-							.append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ words[1] + "\n");
-							cli.getChatsActivos().get(words[0]).getTexto().grabFocus();
+							String msjAgregar = cli.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
+							cli.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
 						}
 						else if(words[0]!=cli.getPaqueteUsuario().getUsername() && !words[1].equals(""))
 						{
@@ -250,8 +245,8 @@ public class Sala extends JFrame  {
 							chatPropio.setVisible(true);
 
 							cli.getChatsActivos().put(words[0], chatPropio);
-							chatPropio.getChat().append(cli.getPaqueteUsuario().getUsername() + ": "
-									+ words[1] + "\n");
+							String msjAgregar = cli.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
+							chatPropio.agregarMsj(msjAgregar);
 						}
 						synchronized (cli) {
 							cli.notify();
@@ -301,13 +296,13 @@ public class Sala extends JFrame  {
 		btnDesconectarse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (abrirVentanaConfirmaSalir()) {
-						synchronized (cli) {
-							cli.getPaqueteSala().setCliente(cli.getPaqueteUsuario().getUsername());
-							cli.getPaqueteSala().setNombreSala(nombreSala);
-							cli.setAccion(Comando.DESCONECTARDESALA);
-							cli.notify();
-						}
-						dispose();	
+					synchronized (cli) {
+						PaqueteSala paqueteSala = new PaqueteSala(nombreSala, cli.getPaqueteUsuario().getUsername());
+						cli.setPaqueteSala(paqueteSala);
+						cli.setAccion(Comando.DESCONECTARDESALA);
+						cli.notify();
+					}
+					dispose();	
 				}
 			}
 		});
@@ -376,5 +371,22 @@ public class Sala extends JFrame  {
 		this.ownerSala = ownerSala;
 	}
 
-	
+	public void eliminarConectados() {
+		this.listaConectadosSala.removeAll();
+	}
+
+	public void cambiarModelo(DefaultListModel<String> modelo) {
+		this.listaConectadosSala.setModel(modelo);
+	}
+
+	public void agregarMsj(String string) {
+		chat.append(string);
+		texto.grabFocus();
+	}
+
+	public void cargarHistorial(String historial) {
+		chat.setText(historial);
+	}
+
+
 }

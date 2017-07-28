@@ -28,16 +28,22 @@ public class Chat extends JFrame {
 	private JPanel contentPane;
 	private JTextField texto;
 	private JTextArea chat;
-	private Cliente client;
-
-
-
+	
 	public Chat(final Cliente cliente) {
-		this.client = cliente;
-
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	
 		setBounds(100, 100, 485, 315);
 		setResizable(false);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				if (mostrarVentanaConfirmacion()) {
+					cliente.eliminarChatActivo(getTitle());
+					dispose();
+				}
+			}
+		});
+		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -111,24 +117,20 @@ public class Chat extends JFrame {
 		contentPane.add(enviar);
 
 
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-				mostrarVentanaConfirmacion();
-			}
-		});
+		
 		texto.setBounds(10, 240, 337, 27);
 		contentPane.add(texto);
 		texto.setColumns(10);
+		setVisible(true);
 	}
 
-	private void mostrarVentanaConfirmacion() {
+	private boolean mostrarVentanaConfirmacion() {
 		int res = JOptionPane.showConfirmDialog(this, "¿Desea salir de la sesión de chat?", "Confirmación",
 				JOptionPane.YES_NO_OPTION);
 		if (res == JOptionPane.YES_OPTION) {
-			client.getChatsActivos().remove(getTitle());
-			VentanaPrincipal.getEnviarATodosBut().setEnabled(true); // ?
-			dispose();
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -138,5 +140,10 @@ public class Chat extends JFrame {
 
 	public JTextField getTexto() {
 		return texto;
+	}
+
+	public void agregarMsj(String msjAgregar) {
+		chat.append(msjAgregar);
+		texto.grabFocus();
 	}
 }

@@ -8,9 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,36 +25,21 @@ import javax.swing.border.EmptyBorder;
 import cliente.Cliente;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
-import paqueteEnvios.PaqueteUsuario;
+import paqueteEnvios.PaqueteSala;
 
 import java.awt.Font;
 import javax.swing.JTextArea;
 
 public class VentanaPrincipal extends JFrame {
-	
+
 	private static final long serialVersionUID = 1L;
 	private String user = null;
 	private Cliente cliente;
-	private PaqueteUsuario paqueteUsuario;
-	private static int cantUsuariosCon;
-	
-	private ArrayList<Sala> salasDisponibles = new ArrayList<>();
-	private Map<String,Sala> mapaSalas = new HashMap<>();
-
-	private JPanel contentPane;
-	private DefaultListModel<String> modelo = new DefaultListModel<String>();
-	private DefaultListModel<String> modeloSalas = new DefaultListModel<String>();
 
 	private static JList<String> listaUsuariosChatGeneral = new JList<String>();
 	private static JList<String> listaSalas = new JList<String>();
 
-
 	private static JTextArea chat;
-	private static JButton enviarATodos;
-	private JLabel labelNombreUsuario;
-
-	private JTextField texto;
-
 
 	public VentanaPrincipal(Cliente cli) {
 
@@ -82,7 +65,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBackground(Color.GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -111,7 +94,6 @@ public class VentanaPrincipal extends JFrame {
 								Chat chat = new Chat(cliente);
 								cliente.getChatsActivos().put(listaUsuariosChatGeneral.getSelectedValue(), chat);
 								chat.setTitle(listaUsuariosChatGeneral.getSelectedValue());
-								chat.setVisible(true);
 							}
 						}
 					}
@@ -119,7 +101,6 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 
-		listaUsuariosChatGeneral.setModel(modelo);
 
 		JScrollPane panelListaSalas = new JScrollPane();
 		panelListaSalas.setBounds(18, 329, 171, 117);
@@ -136,8 +117,8 @@ public class VentanaPrincipal extends JFrame {
 				if (arg0.getClickCount() == 2) {
 					if (listaSalas.getSelectedValue() != null) {
 						if (!cliente.getSalasActivas().containsKey(listaSalas.getSelectedValue())) {
-							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
-							cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
+							PaqueteSala paqueteSala = new PaqueteSala(listaSalas.getSelectedValue(),cliente.getPaqueteUsuario().getUsername());
+							cliente.setPaqueteSala(paqueteSala);
 							synchronized (cliente) {
 								cliente.setAccion(Comando.ENTRARSALA);
 								cliente.notify();
@@ -149,7 +130,6 @@ public class VentanaPrincipal extends JFrame {
 				}
 			}
 		});
-		listaSalas.setModel(modeloSalas);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(209, 11, 443, 436);
@@ -164,7 +144,7 @@ public class VentanaPrincipal extends JFrame {
 		chat.setLineWrap(true);
 		scrollPane_1.setViewportView(chat);
 
-		texto = new JTextField();
+		JTextField texto = new JTextField();
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!texto.getText().equals("") && !texto.getText().startsWith("@")) {
@@ -192,10 +172,8 @@ public class VentanaPrincipal extends JFrame {
 						cliente.setPaqueteMensaje(paqueteMsj);
 
 						if(cliente.getChatsActivos().containsKey(words[0])){
-							cliente.getChatsActivos().get(words[0]).getChat()
-							.append(user + ": "
-									+ words[1] + "\n");
-							cliente.getChatsActivos().get(words[0]).getTexto().grabFocus();
+							String msjAgregar = user + ": " + words[1] + "\n";
+							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
 						} else {
 							Chat chatPropio = new Chat(cliente);
 
@@ -203,8 +181,8 @@ public class VentanaPrincipal extends JFrame {
 							chatPropio.setVisible(true);
 
 							cliente.getChatsActivos().put(words[0], chatPropio);
-							chatPropio.getChat().append(user + ": "
-									+ words[1] + "\n");
+							String msjAgregar = user + ": " + words[1] + "\n";
+							chatPropio.agregarMsj(msjAgregar);
 						}
 						synchronized (cliente) {
 							cliente.notify();
@@ -232,7 +210,7 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(texto);
 		texto.setColumns(10);
 
-		enviarATodos = new JButton("Enviar a Todos");
+		JButton enviarATodos = new JButton("Enviar a Todos");
 		enviarATodos.setEnabled(true);
 		enviarATodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -262,10 +240,8 @@ public class VentanaPrincipal extends JFrame {
 						cliente.setPaqueteMensaje(paqueteMsj);
 
 						if(cliente.getChatsActivos().containsKey(words[0])){
-							cliente.getChatsActivos().get(words[0]).getChat()
-							.append(user + ": "
-									+ words[1] + "\n");
-							cliente.getChatsActivos().get(words[0]).getTexto().grabFocus();
+							String msjAgregar = user + ": " + words[1] + "\n";
+							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
 						} else {
 							Chat chatPropio = new Chat(cliente);
 
@@ -273,8 +249,8 @@ public class VentanaPrincipal extends JFrame {
 							chatPropio.setVisible(true);
 
 							cliente.getChatsActivos().put(words[0], chatPropio);
-							chatPropio.getChat().append(user + ": "
-									+ words[1] + "\n");
+							String msjAgregar = user + ": " + words[1] + "\n";
+							chatPropio.agregarMsj(msjAgregar);
 						}
 
 						synchronized (cliente) {
@@ -302,7 +278,7 @@ public class VentanaPrincipal extends JFrame {
 
 
 
-		labelNombreUsuario = new JLabel(user);
+		JLabel labelNombreUsuario = new JLabel(user);
 		labelNombreUsuario.setForeground(Color.BLACK);
 		labelNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		labelNombreUsuario.setBounds(86, 11, 103, 16);
@@ -323,7 +299,7 @@ public class VentanaPrincipal extends JFrame {
 		JButton btnCrearSala = new JButton("Crear Sala");
 		btnCrearSala.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new MenuCreacionSala(cliente).setVisible(true);
+				new MenuCreacionSala(cliente);
 			}
 		});
 		btnCrearSala.setEnabled(true);
@@ -336,8 +312,8 @@ public class VentanaPrincipal extends JFrame {
 				if(listaSalas.getSelectedValue()!=null) {
 					if (abrirVentanaConfirmaEliminarSalaChat()) {
 						synchronized (cliente) {
-							cliente.getPaqueteSala().setNombreSala(listaSalas.getSelectedValue());
-							cliente.getPaqueteSala().setCliente(cliente.getPaqueteUsuario().getUsername());
+							PaqueteSala paqueteSala = new PaqueteSala(listaSalas.getSelectedValue(), cliente.getPaqueteUsuario().getUsername());
+							cliente.setPaqueteSala(paqueteSala);
 							cliente.setAccion(Comando.ELIMINARSALA);
 							cliente.notify();
 						}
@@ -372,14 +348,6 @@ public class VentanaPrincipal extends JFrame {
 		return false;
 	}	
 
-	public PaqueteUsuario getPaqueteUsuario() {
-		return paqueteUsuario;
-	}
-
-	public static int getCantUsuariosCon() {
-		return cantUsuariosCon;
-	}
-
 	public static JList<String> getListConectados() {
 		return listaUsuariosChatGeneral;
 	}
@@ -388,35 +356,23 @@ public class VentanaPrincipal extends JFrame {
 		return listaSalas;
 	}
 
-	public static void setCantUsuariosCon(int i) {
-		cantUsuariosCon = i;
-	}
-
 	public static void setTextoChatGeneral (String name, String text) {
 		chat.append(name + " : " + text + "\n");
 	}
 
-	public static JButton getEnviarATodosBut () {
-		return enviarATodos;
+	public static void eliminarConectados() {
+		listaUsuariosChatGeneral.removeAll();
 	}
 
-
-
-	public ArrayList<Sala> getSalasDisponibles() {
-		return salasDisponibles;
+	public static void cambiarModelo(DefaultListModel<String> modelo) {
+		listaUsuariosChatGeneral.setModel(modelo);
 	}
 
-
-	public void setSalasDisponibles(ArrayList<Sala> salasDisponibles) {
-		this.salasDisponibles = salasDisponibles;
+	public static void eliminarSalas() {
+		listaSalas.removeAll();
 	}
 
-
-	public Map<String,Sala> getMapaSalas() {
-		return mapaSalas;
-	}
-
-	public void setMapaSalas(Map<String,Sala> mapaSalas) {
-		this.mapaSalas = mapaSalas;
+	public static void cambiarModeloSalas(DefaultListModel<String> modelo) {
+		listaSalas.setModel(modelo);		
 	}
 }

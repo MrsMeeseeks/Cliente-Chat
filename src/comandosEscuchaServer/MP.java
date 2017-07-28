@@ -15,14 +15,11 @@ public class MP extends ComandoEscuchaServer {
 			Chat chat = new Chat(cliente);
 
 			chat.setTitle(paqueteMensaje.getUserEmisor());
-			chat.setVisible(true);
 
 			cliente.getChatsActivos().put(paqueteMensaje.getUserEmisor(), chat);
 		}
-		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).getChat()
-		.append(paqueteMensaje.getUserEmisor() + ": "
-				+ paqueteMensaje.getMsj() + "\n");
-		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).getTexto().grabFocus();		
+		String msjAgregar = paqueteMensaje.getUserEmisor() + ": "+ paqueteMensaje.getMsj() + "\n";
+		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).agregarMsj(msjAgregar);
 	}
 
 }

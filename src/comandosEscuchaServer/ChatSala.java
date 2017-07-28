@@ -12,11 +12,8 @@ public class ChatSala extends ComandoEscuchaServer {
 		Cliente cliente = escuchaServer.getCliente();
 	
 		if((cliente.getSalasActivas().containsKey(paq.getNombreSala()))){
-
-			cliente.getSalasActivas().get(paq.getNombreSala()).getChat()
-			.append(paq.getUserEmisor() + ": " + paq.getMsj() + "\n");
-			cliente.getSalasActivas().get(paq.getNombreSala()).getTexto().grabFocus();
-
+			String msjAgregar = paq.getUserEmisor() + ": " + paq.getMsj() + "\n";
+			cliente.getSalasActivas().get(paq.getNombreSala()).agregarMsj(msjAgregar);
 		}
 	}
 }

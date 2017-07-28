@@ -20,7 +20,10 @@ public class NewSala extends ComandoEscuchaServer {
 			cliente.getPaqueteUsuario().setListaDeSalas(listadoSalas);
 			escuchaServer.actualizarListaSalas();
 		} else {
-			JOptionPane.showMessageDialog(null, "Sala ya existente.");
+			if(paqueteDUS.getMsj().equals(Paquete.msjFallo))
+				JOptionPane.showMessageDialog(null, "Sala ya existente.");
+			else
+				JOptionPane.showMessageDialog(null, "Error al tratar de crear la sala.");
 		}		
 	}
 

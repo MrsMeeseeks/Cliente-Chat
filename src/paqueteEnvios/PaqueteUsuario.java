@@ -8,14 +8,11 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private String username;
-	private boolean inicioSesion;
-	private boolean estado;
 	private List<String> listaDeConectados;
 	private List<String> listaDeSalas;
 	private String password;
 
 	public PaqueteUsuario() {
-		estado = true;
 	}
 
 	public List<String> getListaDeConectados() {
@@ -28,8 +25,6 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	public PaqueteUsuario(String user) {
 		username = user;
-		inicioSesion = false;
-		estado = true;
 	}
 
 	public String getUsername() {
@@ -38,22 +33,6 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public boolean isInicioSesion() {
-		return inicioSesion;
-	}
-
-	public void setInicioSesion(boolean inicioSesion) {
-		this.inicioSesion = inicioSesion;
-	}
-
-	public boolean getEstado() {
-		return estado;
-	}
-
-	public void setEstado(boolean estado) {
-		this.estado = estado;
 	}
 
 	public Object clone() {
@@ -76,6 +55,14 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	public void setListaDeSalas(List<String> listaDeSalas) {
 		this.listaDeSalas = listaDeSalas;
+	}
+
+	public void eliminarUsuario(String username) {
+		this.listaDeConectados.remove(username);
+	}
+
+	public void eliminarSala(String nombreSala) {
+		this.listaDeSalas.remove(nombreSala);		
 	}
 	
 }

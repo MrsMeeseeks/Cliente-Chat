@@ -11,14 +11,13 @@ public class MencionSala extends ComandoEscuchaServer {
 
 	@Override
 	public void ejecutar() {
-		PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
-		paqueteMensaje = gson.fromJson(cadenaLeida, PaqueteMensaje.class);
+		
+		PaqueteMensaje paqueteMensaje = gson.fromJson(cadenaLeida, PaqueteMensaje.class);
 		Cliente cliente = escuchaServer.getCliente();
 		
 		if((cliente.getSalasActivas().containsKey(paqueteMensaje.getNombreSala()))){
-			cliente.getSalasActivas().get(paqueteMensaje.getNombreSala()).getChat()
-			.append(paqueteMensaje.getUserEmisor() + ": " + paqueteMensaje.getMsj() + "\n");
-			cliente.getSalasActivas().get(paqueteMensaje.getNombreSala()).getTexto().grabFocus();
+			String msjAgregar = paqueteMensaje.getUserEmisor() + ": " + paqueteMensaje.getMsj() + "\n";
+			cliente.getSalasActivas().get(paqueteMensaje.getNombreSala()).agregarMsj(msjAgregar);
 		}
 
 		try {
