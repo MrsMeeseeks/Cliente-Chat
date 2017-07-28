@@ -255,8 +255,8 @@ public class VentanaPrincipal extends JFrame {
 		return listaSalas;
 	}
 
-	public static void setTextoChatGeneral (String name, String text) {
-		chat.append(name + " : " + text + "\n");
+	public static void setTextoChatGeneral (String msj) {
+		chat.append(msj);
 	}
 
 	public static void eliminarConectados() {
@@ -283,13 +283,13 @@ public class VentanaPrincipal extends JFrame {
 				if (words.length > 1 && words[1] != "") {
 					words[1] = words[1].trim();
 					
-					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && !words[0].equals(user)){
+					if(cliente.getPaqueteUsuario().getListaDeConectados().contains(words[0]) && !words[0].equals(cliente.getPaqueteUsuario().getUsername())){
 						cliente.setAccion(Comando.MP);
 						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),words[0],words[1],null);
 						cliente.setPaqueteMensaje(paqueteMsj);
 
 						if(cliente.getChatsActivos().containsKey(words[0])){
-							String msjAgregar = user + ": " + words[1] + "\n";
+							String msjAgregar = cliente.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
 							cliente.getChatsActivos().get(words[0]).agregarMsj(msjAgregar);
 						} else {
 							Chat chatPropio = new Chat(cliente);
@@ -297,7 +297,7 @@ public class VentanaPrincipal extends JFrame {
 							chatPropio.setTitle(words[0]);
 
 							cliente.getChatsActivos().put(words[0], chatPropio);
-							String msjAgregar = user + ": " + words[1] + "\n";
+							String msjAgregar = cliente.getPaqueteUsuario().getUsername() + ": " + words[1] + "\n";
 							chatPropio.agregarMsj(msjAgregar);
 						}
 						synchronized (cliente) {
@@ -305,21 +305,45 @@ public class VentanaPrincipal extends JFrame {
 						}
 					}
 
-				} else if(words.length<=1 && !words[0].equals(user)){
+				} else if(words.length<=1 && !words[0].equals(cliente.getPaqueteUsuario().getUsername())){
 					Chat chatPropio = new Chat(cliente);
 					chatPropio.setTitle(words[0]);
 					cliente.getChatsActivos().put(words[0], chatPropio);
 				}
 				
 			} else {
-				chat.append(user + " : " + msj + "\n");
+				if (msj.startsWith("@") || msj.contains(" @")) {
+					 chat.append(cliente.getPaqueteUsuario().getUsername() + ": " + msj + "\n");
 
-				cliente.setAccion(Comando.CHATALL);
-				PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),null,msj,null);
-				cliente.setPaqueteMensaje(paqueteMsj);
-			
-				synchronized (cliente) {
-					cliente.notify();
+					String mensaje;
+					String[] mensajeArray;
+					mensaje = msj;
+					int pos = mensaje.indexOf("@") + 1;
+					mensajeArray = mensaje.substring(pos).split(" ", 2);
+					if (mensajeArray.length > 1 && mensajeArray[1] != null) {
+						mensajeArray[1] = mensajeArray[1].trim();
+					}
+
+
+					if (!mensajeArray[0].equals(cliente.getPaqueteUsuario().getUsername())) {
+						cliente.setAccion(Comando.MENCIONSALA);
+						PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(),
+								mensajeArray[0], msj, "Ventana Principal");
+						cliente.setPaqueteMensaje(paqueteMsj);
+						synchronized (cliente) {
+							cliente.notify();
+						} 
+					}
+				} else {
+					chat.append(cliente.getPaqueteUsuario().getUsername() + " : " + msj + "\n");
+					cliente.setAccion(Comando.CHATALL);
+					PaqueteMensaje paqueteMsj = new PaqueteMensaje(cliente.getPaqueteUsuario().getUsername(), null,
+							msj, null);
+					cliente.setPaqueteMensaje(paqueteMsj);
+
+					synchronized (cliente) {
+						cliente.notify();
+					}
 				}
 			}
 		}

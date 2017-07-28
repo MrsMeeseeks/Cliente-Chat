@@ -8,7 +8,8 @@ public class ChatAll extends ComandoEscuchaServer{
 	@Override
 	public void ejecutar() {
 		PaqueteMensaje paqueteMensaje = gson.fromJson(cadenaLeida, PaqueteMensaje.class);
-		VentanaPrincipal.setTextoChatGeneral(paqueteMensaje.getUserEmisor(),paqueteMensaje.getMsj());
+		String msjAgregar = paqueteMensaje.getUserEmisor() + ": " + paqueteMensaje.getMsjChat() +"\n";
+		VentanaPrincipal.setTextoChatGeneral(msjAgregar);
 	}
 
 }

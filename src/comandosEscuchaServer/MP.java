@@ -18,7 +18,7 @@ public class MP extends ComandoEscuchaServer {
 
 			cliente.getChatsActivos().put(paqueteMensaje.getUserEmisor(), chat);
 		}
-		String msjAgregar = paqueteMensaje.getUserEmisor() + ": "+ paqueteMensaje.getMsj() + "\n";
+		String msjAgregar = paqueteMensaje.getUserEmisor() + ": "+ paqueteMensaje.getMsjChat() + "\n";
 		cliente.getChatsActivos().get(paqueteMensaje.getUserEmisor()).agregarMsj(msjAgregar);
 	}
 
