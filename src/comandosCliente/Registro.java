@@ -18,5 +18,4 @@ public class Registro extends ComandoCliente {
 			e.printStackTrace();
 		}
 	}
-
 }

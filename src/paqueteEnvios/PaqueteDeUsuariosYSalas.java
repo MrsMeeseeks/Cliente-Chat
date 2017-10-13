@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
+
 public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cloneable {
 
 	
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> usuarios;
 	private ArrayList<String> salas;
+//	private ArrayList<ImageIcon> perfiles;
+	
 	private Map<String, PaqueteUsuario> usuariosConectados;
 
 	public PaqueteDeUsuariosYSalas() {
@@ -18,11 +22,18 @@ public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cl
 	public Map<String, PaqueteUsuario> getUsuariosConectados() {
 		return usuariosConectados;
 	}
-
+	
 	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios, ArrayList<String> salas) {
 		this.usuarios = usuarios;
 		this.salas = salas;
 	}
+
+//	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios, ArrayList<String> salas,
+//			ArrayList<ImageIcon> perfiles) {
+//		this.usuarios = usuarios;
+//		this.salas = salas;
+//		this.perfiles = perfiles;
+//	}
 
 	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios) {
 		this.usuarios = usuarios;
@@ -35,6 +46,11 @@ public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cl
 	public ArrayList<String> getSalas() {
 		return salas;
 	}
+	
+//	public ArrayList<ImageIcon> getPerfiles() {
+//		return perfiles;
+//	}
+	
 	@Override
 	public Object clone() {
 		Object obj = null;

@@ -11,8 +11,12 @@ import javax.swing.JTextField;
 import cliente.Cliente;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 
-
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import javax.swing.JLabel;
@@ -21,6 +25,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
 public class MenuRegistro extends JFrame {
@@ -30,6 +38,12 @@ public class MenuRegistro extends JFrame {
 	JPanel contentPane;
 	private JTextField txtUsuario;
 	private JPasswordField pwPassword;
+	
+	public static BufferedImage sinPerfil;
+	//Ancho máximo
+    public static int MAX_WIDTH=60;
+    //Alto máximo
+    public static int MAX_HEIGHT=60;
 
 	public MenuRegistro(final Cliente cliente) {
 
@@ -105,6 +119,17 @@ public class MenuRegistro extends JFrame {
 				synchronized(cliente){
 					cliente.getPaqueteUsuario().setUsername(txtUsuario.getText());
 					cliente.getPaqueteUsuario().setPassword(pwPassword.getText());
+					
+//					try {
+//						sinPerfil = ImageIO.read(new File("resources/noItem.png"));
+//						cliente.getPaqueteUsuario().setFotoPerfil(new ImageIcon(
+//								sinPerfil.getScaledInstance(MAX_WIDTH, MAX_HEIGHT, Image.SCALE_DEFAULT)));
+////						cliente.getPaqueteUsuario().setFotoPerfil(new 
+////								ImageIcon(devolverImagenRedimencionada(sinPerfil)));
+//					} catch (IOException e1) {
+//						System.out.println("Error al cargar la imágen de perfil.");
+////						e1.printStackTrace();
+//					}
 					cliente.setAccion(Comando.REGISTRO);
 					cliente.notify();
 				}
@@ -129,4 +154,5 @@ public class MenuRegistro extends JFrame {
 	public void setPasswordField(JPasswordField pwPassword) {
 		this.pwPassword = pwPassword;
 	}
+	
 }

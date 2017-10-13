@@ -21,6 +21,7 @@ public abstract class Comando {
 	public static final int MENCIONSALA = 10;
 	public static final int DESCONECTARDESALA = 11;
 	public static final int ELIMINARSALA = 12;
+	public static final int CAMBIARPERFIL = 13;
 	
 	protected final Gson gson = new Gson();
 	protected String cadenaLeida;

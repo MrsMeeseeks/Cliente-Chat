@@ -63,7 +63,7 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-
+//////////////////ver esto para actualizar fotos de la lista
 	public void actualizarListaConectadosSala(PaqueteSala paqueteSala) {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		synchronized (cliente) {

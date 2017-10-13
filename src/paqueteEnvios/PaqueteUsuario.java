@@ -1,7 +1,14 @@
 package paqueteEnvios;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 
 public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
@@ -11,6 +18,7 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 	private List<String> listaDeConectados;
 	private List<String> listaDeSalas;
 	private String password;
+//	private ImageIcon fotoPerfil;
 
 	public PaqueteUsuario() {
 	}
@@ -65,6 +73,29 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 		this.listaDeSalas.remove(nombreSala);		
 	}
 	
+//	public ImageIcon getFotoPerfil() {
+//		return fotoPerfil;
+//	}
+//	
+//	public String getNombreFoto() {
+//		return fotoPerfil.toString();
+//	}
+//	
+//	public void setFotoPerfil(ImageIcon fotoPerfil) {
+//		this.fotoPerfil = fotoPerfil;
+//	}
+//	
+//	public ImageIcon buscarFotoPerfil(String nombreFoto) {
+//		BufferedImage foto;
+//		try {
+//			foto = ImageIO.read(new File("resources/"+nombreFoto));
+//			return new ImageIcon(foto);
+//		} catch (IOException e) {
+//			System.out.println("Error al buscar foto en paquete de usuario.");
+////			e.printStackTrace();
+//		}
+//		return null;
+//	}
 }
 
                                                                
