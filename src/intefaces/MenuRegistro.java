@@ -1,35 +1,24 @@
 package intefaces;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
-
-import paqueteEnvios.Comando;
-
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import cliente.Cliente;
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JPanel;
+import paqueteEnvios.Comando;
+import paqueteEnvios.PaqueteUsuario;
 
 public class MenuRegistro extends JFrame {
 
@@ -39,7 +28,6 @@ public class MenuRegistro extends JFrame {
 	private JTextField txtUsuario;
 	private JPasswordField pwPassword;
 	
-	public static BufferedImage sinPerfil;
 	//Ancho máximo
     public static int MAX_WIDTH=60;
     //Alto máximo
@@ -100,6 +88,16 @@ public class MenuRegistro extends JFrame {
 				synchronized(cliente){
 					cliente.getPaqueteUsuario().setUsername(txtUsuario.getText());
 					cliente.getPaqueteUsuario().setPassword(pwPassword.getText());
+					byte[] foto = null;
+					String nuevoArchivo ="Imagenes/" + cliente.getPaqueteUsuario().getUsername() + ".png";
+					try {
+						foto = PaqueteUsuario.deArchivoABytes(new File("Imagenes/noItem.png"));
+						PaqueteUsuario.deBytesAFile(foto, nuevoArchivo);
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+					cliente.getPaqueteUsuario().setFotoPerfil(foto);
+					
 					cliente.setAccion(Comando.REGISTRO);
 					cliente.notify();
 				}
@@ -119,17 +117,16 @@ public class MenuRegistro extends JFrame {
 				synchronized(cliente){
 					cliente.getPaqueteUsuario().setUsername(txtUsuario.getText());
 					cliente.getPaqueteUsuario().setPassword(pwPassword.getText());
-					
-//					try {
-//						sinPerfil = ImageIO.read(new File("resources/noItem.png"));
-//						cliente.getPaqueteUsuario().setFotoPerfil(new ImageIcon(
-//								sinPerfil.getScaledInstance(MAX_WIDTH, MAX_HEIGHT, Image.SCALE_DEFAULT)));
-////						cliente.getPaqueteUsuario().setFotoPerfil(new 
-////								ImageIcon(devolverImagenRedimencionada(sinPerfil)));
-//					} catch (IOException e1) {
-//						System.out.println("Error al cargar la imágen de perfil.");
-////						e1.printStackTrace();
-//					}
+					byte[] foto = null;
+					String nuevoArchivo ="Imagenes/" + cliente.getPaqueteUsuario().getUsername() + ".png";
+					try {
+						foto = PaqueteUsuario.deArchivoABytes(
+								new File("Imagenes/noItem.png"));
+						PaqueteUsuario.deBytesAFile(foto, nuevoArchivo);
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+					cliente.getPaqueteUsuario().setFotoPerfil(foto);
 					cliente.setAccion(Comando.REGISTRO);
 					cliente.notify();
 				}

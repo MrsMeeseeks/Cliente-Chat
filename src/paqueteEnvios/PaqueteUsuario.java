@@ -2,9 +2,16 @@ package paqueteEnvios;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -18,7 +25,9 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 	private List<String> listaDeConectados;
 	private List<String> listaDeSalas;
 	private String password;
-//	private ImageIcon fotoPerfil;
+	private byte[] fotoPerfil;
+	
+	private ArrayList<PaqueteUsuario> listaPaqUsuariosConectados;
 
 	public PaqueteUsuario() {
 	}
@@ -29,6 +38,10 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 
 	public void setListaDeConectados(List<String> listaDeConectados) {
 		this.listaDeConectados = listaDeConectados;
+	}
+	
+	public void eliminarUsuario(String username) {
+		this.listaDeConectados.remove(username);
 	}
 
 	public PaqueteUsuario(String user) {
@@ -65,36 +78,103 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 		this.listaDeSalas = listaDeSalas;
 	}
 
-	public void eliminarUsuario(String username) {
-		this.listaDeConectados.remove(username);
-	}
-
 	public void eliminarSala(String nombreSala) {
 		this.listaDeSalas.remove(nombreSala);		
 	}
 	
-//	public ImageIcon getFotoPerfil() {
-//		return fotoPerfil;
+	public void setFotoPerfil(byte[] fotoPerfil) {
+		this.fotoPerfil = fotoPerfil;
+	}
+	
+	public static BufferedImage getFotoEnBufferedImage(byte[] fotoPerfil) throws IOException {
+		BufferedImage imagen = null;
+		if(fotoPerfil != null && fotoPerfil.length!=0) {
+			imagen = ImageIO.read(new ByteArrayInputStream(fotoPerfil));
+		}
+		return imagen;
+	}
+	
+	public byte[] getFotoPerfil(){
+		return fotoPerfil;
+	}
+	
+	public static byte[] deArchivoABytes(File archivo) throws FileNotFoundException {
+		FileInputStream archFoto = new FileInputStream(archivo);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        try {
+            for (int readNum; (readNum = archFoto.read(buf)) != -1;) {
+                bos.write(buf, 0, readNum);
+                System.out.println("read " + readNum + " bytes,");
+            }
+        } catch (IOException ex) {
+        	System.out.println("Error al setear la imagen en paquete usuario");
+        }
+		return bos.toByteArray();
+	}
+	
+//	public static byte[] deArchivoAImageIcon(File archivo) throws FileNotFoundException {
+//		String pathArchElegido = archivo.getPath();
+//		
+//		//muestra la foto elegida
+//		BufferedImage bimage = loadImage(pathArchElegido);
+//		ImageIcon iconoPerfil = new ImageIcon(
+//				bimage.getScaledInstance(MAX_WIDTH, MAX_HEIGHT,
+//						Image.SCALE_DEFAULT));
+//		labelImagen.setIcon(iconoPerfil);
+//		panelPerfil.add(labelImagen);
 //	}
+	
+	//convierte la foto que estaba en bytes en archivo
+	public static boolean deBytesAFile(byte[] fotoBytes, String archivoDestino) {
+		boolean correcto = false;
+		
+		try {
+		     OutputStream out = new FileOutputStream(archivoDestino);
+		     out.write(fotoBytes);
+		     out.close();        
+		     correcto = true;
+		   } catch (Exception e) {
+		     e.printStackTrace();
+		   } 
+		
+		return correcto;
+	}
+	
+    /*
+    Este método se utiliza para cargar la imagen de disco
+    */
+    public static ImageIcon deArchivoAImageIcon(String pathName) {
+        BufferedImage bimage = null;
+        try {
+            bimage = ImageIO.read(new File(pathName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ImageIcon(bimage.getScaledInstance(50, 50,Image.SCALE_DEFAULT));
+    }
+    
+    public static ImageIcon deBytesAImageIcon(byte[] fotoEnBytes) {
+    	BufferedImage bimage = null;
+    	try {
+			 bimage = ImageIO.read(new ByteArrayInputStream(fotoEnBytes));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	return new ImageIcon(bimage);
+    }
+
+	public ArrayList<PaqueteUsuario> getListaPaqUsuariosConectados() {
+		return listaPaqUsuariosConectados;
+	}
+
+	public void setListaPaqUsuariosConectados(ArrayList<PaqueteUsuario> usuarios) {
+		this.listaPaqUsuariosConectados = usuarios;
+	}
 //	
-//	public String getNombreFoto() {
-//		return fotoPerfil.toString();
-//	}
-//	
-//	public void setFotoPerfil(ImageIcon fotoPerfil) {
-//		this.fotoPerfil = fotoPerfil;
-//	}
-//	
-//	public ImageIcon buscarFotoPerfil(String nombreFoto) {
-//		BufferedImage foto;
-//		try {
-//			foto = ImageIO.read(new File("resources/"+nombreFoto));
-//			return new ImageIcon(foto);
-//		} catch (IOException e) {
-//			System.out.println("Error al buscar foto en paquete de usuario.");
-////			e.printStackTrace();
-//		}
-//		return null;
+//	public void eliminarUsuarioYFoto(String username) {
+//		this.listaConectadosConFoto.remove(username);
 //	}
 }
 

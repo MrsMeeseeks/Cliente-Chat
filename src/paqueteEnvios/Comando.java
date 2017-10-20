@@ -6,7 +6,7 @@ public abstract class Comando {
 	
 	public static final String[] NOMBRES = {"Conexión","Registro","InicioSesion","Desconectar",
 			"ChatAll","MP","NewSala","EntrarSala","ConexionSala","ChatSala","MencionSala","DesconectarDeSala",
-			"EliminarSala"};
+			"EliminarSala","CambiarPerfil"};
 
 	public static final int CONEXION = 0;
 	public static final int REGISTRO = 1;

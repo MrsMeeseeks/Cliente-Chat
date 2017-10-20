@@ -1,7 +1,8 @@
 package intefaces;
 
 import java.awt.Color;
-
+import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -9,53 +10,48 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.peer.LabelPeer;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import cliente.Cliente;
 import paqueteEnvios.Comando;
 import paqueteEnvios.PaqueteMensaje;
 import paqueteEnvios.PaqueteSala;
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-
-import javax.swing.JTextArea;
+import paqueteEnvios.PaqueteUsuario;
 
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private String user = null;
-	private Cliente cliente;
+	private static Cliente cliente;
 
 	private static JList<String> listaUsuariosChatGeneral = new JList<String>();
 	private static JList<String> listaSalas = new JList<String>();
+	
+//	private static Hashtable<String,byte[]> listaFotosUsuariosChatGral =
+//			new Hashtable<String,byte[]>();
 
 	private static JTextArea chat;
 	
+	private static JLabel labelPerfil = new JLabel();
+	
 	//Ancho máximo
-    public static int MAX_WIDTH=60;
+    public static int MAX_WIDTH=70;
     //Alto máximo
-    public static int MAX_HEIGHT=60;
+    public static int MAX_HEIGHT=70;
 
 	public VentanaPrincipal(Cliente cli) {
 
@@ -93,17 +89,12 @@ public class VentanaPrincipal extends JFrame {
 		labelUsuario.setBounds(22, 11, 66, 16);
 		contentPane.add(labelUsuario);
 		
-		JFileChooser seleccionArchivo = new JFileChooser();
-		//Creo un filtro por extensión
-		FileNameExtensionFilter filtro = new FileNameExtensionFilter("JPG & PNG", "jpg", "png");
-		seleccionArchivo.setFileFilter(filtro);
-		
 		JButton botonPerfil = new JButton("Foto");
 		botonPerfil.setBounds(22, 31, 66, 16);
 		botonPerfil.setActionCommand("abre");
 		contentPane.add(botonPerfil);
 		
-		JLabel labelPerfil = new JLabel();
+		ponerFotoEnLabel();
 		
 		JPanel panelPerfil = new JPanel();
 		panelPerfil.setBounds(96, 11, MAX_WIDTH, MAX_HEIGHT);
@@ -114,23 +105,12 @@ public class VentanaPrincipal extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if("abre".equals(e.getActionCommand())) {
-					int valorFileChoser = seleccionArchivo.showOpenDialog(null);
-					if(valorFileChoser == JFileChooser.APPROVE_OPTION) {
-						File archivoElegido = seleccionArchivo.getSelectedFile();
-						String pathArchElegido = archivoElegido.getPath();
-						try {
-							BufferedImage bimage = loadImage(pathArchElegido);
-//							ImageIcon iconoPerfil = new ImageIcon(
-//									devolverImagenRedimencionada(bimage));
-							ImageIcon iconoPerfil = new ImageIcon(
-									bimage.getScaledInstance(MAX_WIDTH, MAX_HEIGHT, Image.SCALE_DEFAULT));
-							labelPerfil.setIcon(iconoPerfil);
-						}catch (Exception e2) {
-							JOptionPane.showMessageDialog(null, "Error al arbir la imágen.");
-						}
-					}
-				}
+				new MenuCambiarFotoPerfil(cliente);
+				ponerFotoEnLabel();
+//				panelPerfil.repaint();
+//				panelPerfil.validate();
+				panelPerfil.add(labelPerfil);
+				contentPane.add(panelPerfil);
 			}
 		});
 
@@ -140,6 +120,9 @@ public class VentanaPrincipal extends JFrame {
 		panelListaUsuarios.setViewportView(listaUsuariosChatGeneral);
 		listaUsuariosChatGeneral.setForeground(Color.WHITE);
 		listaUsuariosChatGeneral.setBackground(Color.DARK_GRAY);
+		
+		RenderLista rander=new RenderLista();
+		listaUsuariosChatGeneral.setCellRenderer(rander);
 
 		listaUsuariosChatGeneral.addMouseListener(new MouseAdapter() {
 			@Override
@@ -150,7 +133,7 @@ public class VentanaPrincipal extends JFrame {
 							if (cliente != null) {
 								Chat chat = new Chat(cliente);
 								cliente.getChatsActivos().put(listaUsuariosChatGeneral.getSelectedValue(), chat);
-								chat.setTitle(listaUsuariosChatGeneral.getSelectedValue());
+								chat.setTitle(listaUsuariosChatGeneral.getSelectedValue().toString());
 							}
 						}
 					}
@@ -232,8 +215,6 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(enviarATodos);
 
 
-
-
 		JLabel labelNombreUsuario = new JLabel(user);
 		labelNombreUsuario.setForeground(Color.BLACK);
 		labelNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -284,70 +265,6 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(btnNewButton);
 		setVisible(true);
 	}
-	
-///////////////////////////////////////////////////////////////////////////////////////
-	/*Este método es el de la magia recibe la ruta al archivo original y la ruta donde vamos a guardar la copia
-    copyImage("C:\\Users\\IngenioDS\\Desktop\\test.png","C:\\Users\\IngenioDS\\Desktop\\Copia\\test2.png");*/
- 
-    public BufferedImage devolverImagenRedimencionada(BufferedImage bimage) {
-        if(bimage.getHeight()>bimage.getWidth()){
-            int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
-            bimage = redimencionarImagen(bimage, MAX_WIDTH, heigt);
-            int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
-            bimage = redimencionarImagen(bimage, width, MAX_HEIGHT);
-        }else{
-            int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
-            bimage = redimencionarImagen(bimage, width, MAX_HEIGHT);
-            int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
-            bimage = redimencionarImagen(bimage, MAX_WIDTH, heigt);
-        }
-        return bimage;
-//        saveImage(bimage, copyPath);
-    }
-	
-    /*
-    Este método se utiliza para cargar la imagen de disco
-    */
-    public static BufferedImage loadImage(String pathName) {
-        BufferedImage bimage = null;
-        try {
-            bimage = ImageIO.read(new File(pathName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bimage;
-    }
- 
-    /*
-    Este método se utiliza para almacenar la imagen en disco
-    */
-//    public static void saveImage(BufferedImage bufferedImage, String pathName) {
-//        try {
-//            String format = (pathName.endsWith(".png")) ? "png" : "jpg";
-//            File file =new File(pathName);
-//            file.getParentFile().mkdirs();
-//            ImageIO.write(bufferedImage, format, file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-	
-	/*
-	Este método se utiliza para redimensionar la imagen
-	*/
-	public static BufferedImage redimencionarImagen(BufferedImage bufferedImage, int newW, int newH) {
-		int w = bufferedImage.getWidth();
-		int h = bufferedImage.getHeight();
-		
-		BufferedImage bufim = new BufferedImage(newW, newH, bufferedImage.getType());
-		Graphics2D g = bufim.createGraphics();
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.drawImage(bufferedImage, 0, 0, newW, newH, 0, 0, w, h, null);
-		g.dispose();
-		
-		return bufim;
-	}
-///////////////////////////////////////////////////////////////////////////////////////
 
 	private boolean abrirVentanaConfirmaSalir() {
 		int opcion = JOptionPane.showConfirmDialog(this, "¿Desea salir del Chat?", "Confirmación",
@@ -382,12 +299,25 @@ public class VentanaPrincipal extends JFrame {
 
 	public static void eliminarConectados() {
 		listaUsuariosChatGeneral.removeAll();
+//		listaFotosUsuariosChatGral.clear();
 	}
 
 	public static void cambiarModelo(DefaultListModel<String> modelo) {
 		listaUsuariosChatGeneral.setModel(modelo);
 	}
-
+	
+//////////////////////////////////////////////////////////////////////////////////	
+//	public static void cambiarModeloFotos(Map<String, byte[]> mapUsers) {
+//		if(!cliente.getPaqueteUsuario().getListaDeConectados().isEmpty()) {
+//			for (String clave : cliente.getPaqueteUsuario().getListaDeConectados()) {
+//				listaFotosUsuariosChatGral.put(clave, mapUsers.get(clave));
+//			}
+//		} else {
+//			listaFotosUsuariosChatGral.clear();
+//		}
+//	}
+//////////////////////////////////////////////////////////////////////////////////
+	
 	public static void eliminarSalas() {
 		listaSalas.removeAll();
 	}
@@ -469,5 +399,19 @@ public class VentanaPrincipal extends JFrame {
 			}
 		}
 		
+	}
+	
+	public static void ponerFotoEnLabel() {
+		BufferedImage bimage;
+		File archFoto = new File("Imagenes/"+cliente.getPaqueteUsuario().getUsername()+".png");
+		try {
+			byte[] foto = PaqueteUsuario.deArchivoABytes(archFoto);
+			bimage = PaqueteUsuario.getFotoEnBufferedImage(foto);
+			ImageIcon iconoPerfil = new ImageIcon(
+					bimage.getScaledInstance(MAX_WIDTH, MAX_HEIGHT, Image.SCALE_DEFAULT));
+			labelPerfil.setIcon(iconoPerfil);
+		} catch (IOException e1) {
+			System.out.println("Error al cargar la imágen de perfil en ventana ppal.");
+		}
 	}
 }

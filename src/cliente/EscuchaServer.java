@@ -1,11 +1,10 @@
 package cliente;
 
+import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-
 import javax.swing.DefaultListModel;
-
 import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
@@ -24,6 +23,7 @@ public class EscuchaServer extends Thread {
 	private final Gson gson = new Gson();
 
 protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
+//protected static Hashtable<String,byte[]> fotosUsuariosConectados = new Hashtable<String,byte[]>();
 
 	public EscuchaServer(final Cliente cliente) {
 		this.cliente = cliente;
@@ -63,7 +63,7 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-//////////////////ver esto para actualizar fotos de la lista
+
 	public void actualizarListaConectadosSala(PaqueteSala paqueteSala) {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		synchronized (cliente) {
@@ -80,20 +80,35 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 		}
 	}
 
-	public void actualizarLista() {
+	public void actualizarLista() throws FileNotFoundException {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
+//		Hashtable<String, byte[]> modeloFotos = new Hashtable<String, byte[]>();
+		
 		synchronized (cliente) {
 
 			VentanaPrincipal.eliminarConectados();
 
 			if (cliente.getPaqueteUsuario().getListaDeConectados() != null) {
 				cliente.getPaqueteUsuario().eliminarUsuario(cliente.getPaqueteUsuario().getUsername());
-
+				
 				for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
 					modelo.addElement(cad);
 				}
 				
+//				if(cliente.getPaqueteUsuario().getListaPaqUsuariosConectados()!=null
+//						&& !cliente.getPaqueteUsuario().getListaPaqUsuariosConectados().isEmpty()) {
+//					for (PaqueteUsuario user : cliente.getPaqueteUsuario().getListaPaqUsuariosConectados()) {
+//						modelo.addElement(user.getUsername());
+//						modeloFotos.put(user.getUsername(),user.getFotoPerfil());
+//					}
+//				}
+				
+//				for (byte[] foto : cliente.getPaqueteUsuario().getListaFotosConectados()) {
+//					
+//				}
+				
 				VentanaPrincipal.cambiarModelo(modelo);
+//				VentanaPrincipal.cambiarModeloFotos(modeloFotos);
 			}
 		}
 	}
@@ -110,6 +125,14 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 				}
 				
 				VentanaPrincipal.cambiarModeloSalas(modelo);
+			}
+		}
+	}
+	
+	public void actualizarFotoPerfil() {
+		synchronized (cliente) {
+			if(cliente.getPaqueteUsuario().getFotoPerfil() != null) {
+				VentanaPrincipal.ponerFotoEnLabel();
 			}
 		}
 	}
