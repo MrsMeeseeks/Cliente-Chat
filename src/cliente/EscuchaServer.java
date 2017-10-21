@@ -82,7 +82,7 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 
 	public void actualizarLista() throws FileNotFoundException {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
-//		Hashtable<String, byte[]> modeloFotos = new Hashtable<String, byte[]>();
+//		ArrayList<String> modeloFotos = new ArrayList<String>();
 		
 		synchronized (cliente) {
 
@@ -94,18 +94,7 @@ protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 				for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
 					modelo.addElement(cad);
 				}
-				
-//				if(cliente.getPaqueteUsuario().getListaPaqUsuariosConectados()!=null
-//						&& !cliente.getPaqueteUsuario().getListaPaqUsuariosConectados().isEmpty()) {
-//					for (PaqueteUsuario user : cliente.getPaqueteUsuario().getListaPaqUsuariosConectados()) {
-//						modelo.addElement(user.getUsername());
-//						modeloFotos.put(user.getUsername(),user.getFotoPerfil());
-//					}
-//				}
-				
-//				for (byte[] foto : cliente.getPaqueteUsuario().getListaFotosConectados()) {
-//					
-//				}
+//				modeloFotos = cliente.getPaqueteUsuario().getListaFotosConectados();
 				
 				VentanaPrincipal.cambiarModelo(modelo);
 //				VentanaPrincipal.cambiarModeloFotos(modeloFotos);

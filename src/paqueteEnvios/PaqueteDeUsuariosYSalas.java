@@ -10,8 +10,8 @@ public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cl
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> usuarios;
 	private ArrayList<String> salas;
-//	private ArrayList<byte[]> fotos;
-	private ArrayList<PaqueteUsuario> paqUsuarios;
+	private ArrayList<String> fotos = new ArrayList<String>();
+//	private ArrayList<PaqueteUsuario> paqUsuarios;
 	
 	private Map<String, PaqueteUsuario> usuariosConectados;
 
@@ -25,7 +25,13 @@ public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cl
 	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios, ArrayList<String> salas) {
 		this.usuarios = usuarios;
 		this.salas = salas;
-//		this.fotos = fotos;
+	}
+	
+	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios, ArrayList<String> salas,
+			ArrayList<String> fotos) {
+		this.usuarios = usuarios;
+		this.salas = salas;
+		this.fotos = fotos;
 	}
 
 	public PaqueteDeUsuariosYSalas(ArrayList<String> usuarios) {
@@ -41,12 +47,8 @@ public class PaqueteDeUsuariosYSalas extends Paquete implements Serializable, Cl
 		return salas;
 	}
 	
-//	public ArrayList<byte[]> getFotos() {
-//		return fotos;
-//	}
-	
-	public ArrayList<PaqueteUsuario> getPaqUsuarios() {
-		return paqUsuarios;
+	public ArrayList<String> getFotos() {
+		return fotos;
 	}
 	
 	@Override

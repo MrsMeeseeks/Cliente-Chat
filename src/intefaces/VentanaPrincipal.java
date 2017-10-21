@@ -12,6 +12,8 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -25,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.xml.bind.DatatypeConverter;
 
 import cliente.Cliente;
 import paqueteEnvios.Comando;
@@ -41,8 +44,8 @@ public class VentanaPrincipal extends JFrame {
 	private static JList<String> listaUsuariosChatGeneral = new JList<String>();
 	private static JList<String> listaSalas = new JList<String>();
 	
-//	private static Hashtable<String,byte[]> listaFotosUsuariosChatGral =
-//			new Hashtable<String,byte[]>();
+	private static Hashtable<String,byte[]> listaFotosUsuariosChatGral =
+			new Hashtable<String,byte[]>();
 
 	private static JTextArea chat;
 	
@@ -107,10 +110,9 @@ public class VentanaPrincipal extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				new MenuCambiarFotoPerfil(cliente);
 				ponerFotoEnLabel();
-//				panelPerfil.repaint();
-//				panelPerfil.validate();
 				panelPerfil.add(labelPerfil);
 				contentPane.add(panelPerfil);
+				listaUsuariosChatGeneral.repaint();
 			}
 		});
 
@@ -121,7 +123,9 @@ public class VentanaPrincipal extends JFrame {
 		listaUsuariosChatGeneral.setForeground(Color.WHITE);
 		listaUsuariosChatGeneral.setBackground(Color.DARK_GRAY);
 		
-		RenderLista rander=new RenderLista();
+		RenderLista rander=new RenderLista(cliente.getPaqueteUsuario().getListaDeConectados(),
+				listaFotosUsuariosChatGral);
+		
 		listaUsuariosChatGeneral.setCellRenderer(rander);
 
 		listaUsuariosChatGeneral.addMouseListener(new MouseAdapter() {
@@ -299,7 +303,6 @@ public class VentanaPrincipal extends JFrame {
 
 	public static void eliminarConectados() {
 		listaUsuariosChatGeneral.removeAll();
-//		listaFotosUsuariosChatGral.clear();
 	}
 
 	public static void cambiarModelo(DefaultListModel<String> modelo) {
@@ -307,15 +310,20 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 //////////////////////////////////////////////////////////////////////////////////	
-//	public static void cambiarModeloFotos(Map<String, byte[]> mapUsers) {
-//		if(!cliente.getPaqueteUsuario().getListaDeConectados().isEmpty()) {
-//			for (String clave : cliente.getPaqueteUsuario().getListaDeConectados()) {
-//				listaFotosUsuariosChatGral.put(clave, mapUsers.get(clave));
-//			}
-//		} else {
-//			listaFotosUsuariosChatGral.clear();
-//		}
-//	}
+	public static void cambiarModeloFotos(ArrayList<String> fotosUsers) {
+		if(cliente.getPaqueteUsuario().getListaDeConectados() != null &&
+				!cliente.getPaqueteUsuario().getListaDeConectados().isEmpty()) {
+			listaFotosUsuariosChatGral = new Hashtable<String,byte[]>();
+			int index = 0;
+			for (String clave : cliente.getPaqueteUsuario().getListaDeConectados()) {
+				byte[] base64Decode = DatatypeConverter.parseBase64Binary(fotosUsers.get(index));
+				listaFotosUsuariosChatGral.put(clave, base64Decode);
+				index++;
+			}
+		} else {
+			listaFotosUsuariosChatGral.clear();
+		}
+	}
 //////////////////////////////////////////////////////////////////////////////////
 	
 	public static void eliminarSalas() {

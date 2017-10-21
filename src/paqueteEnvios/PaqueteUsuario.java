@@ -27,7 +27,7 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 	private String password;
 	private byte[] fotoPerfil;
 	
-	private ArrayList<PaqueteUsuario> listaPaqUsuariosConectados;
+	private ArrayList<String> listaFotosConectados = new ArrayList<String>();
 
 	public PaqueteUsuario() {
 	}
@@ -113,18 +113,6 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 		return bos.toByteArray();
 	}
 	
-//	public static byte[] deArchivoAImageIcon(File archivo) throws FileNotFoundException {
-//		String pathArchElegido = archivo.getPath();
-//		
-//		//muestra la foto elegida
-//		BufferedImage bimage = loadImage(pathArchElegido);
-//		ImageIcon iconoPerfil = new ImageIcon(
-//				bimage.getScaledInstance(MAX_WIDTH, MAX_HEIGHT,
-//						Image.SCALE_DEFAULT));
-//		labelImagen.setIcon(iconoPerfil);
-//		panelPerfil.add(labelImagen);
-//	}
-	
 	//convierte la foto que estaba en bytes en archivo
 	public static boolean deBytesAFile(byte[] fotoBytes, String archivoDestino) {
 		boolean correcto = false;
@@ -137,7 +125,6 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 		   } catch (Exception e) {
 		     e.printStackTrace();
 		   } 
-		
 		return correcto;
 	}
 	
@@ -165,17 +152,25 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
     	return new ImageIcon(bimage);
     }
 
-	public ArrayList<PaqueteUsuario> getListaPaqUsuariosConectados() {
-		return listaPaqUsuariosConectados;
+	public ArrayList<String> getListaFotosConectados() {
+		return listaFotosConectados;
 	}
 
-	public void setListaPaqUsuariosConectados(ArrayList<PaqueteUsuario> usuarios) {
-		this.listaPaqUsuariosConectados = usuarios;
+	public void setListaFotosConectados(ArrayList<String> listaFotosConectados) {
+		this.listaFotosConectados = listaFotosConectados;
 	}
+    
+//	public static byte[] deArchivoAImageIcon(File archivo) throws FileNotFoundException {
+//	String pathArchElegido = archivo.getPath();
 //	
-//	public void eliminarUsuarioYFoto(String username) {
-//		this.listaConectadosConFoto.remove(username);
-//	}
+//	//muestra la foto elegida
+//	BufferedImage bimage = loadImage(pathArchElegido);
+//	ImageIcon iconoPerfil = new ImageIcon(
+//			bimage.getScaledInstance(MAX_WIDTH, MAX_HEIGHT,
+//					Image.SCALE_DEFAULT));
+//	labelImagen.setIcon(iconoPerfil);
+//	panelPerfil.add(labelImagen);
+//  }
 }
 
                                                                
